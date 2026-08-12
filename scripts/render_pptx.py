@@ -79,6 +79,8 @@ def main() -> None:
                 image.save(output_dir / f"slide-{index:03d}.png")
 
     print(f"renderer={office}")
+    print("render_status=fallback_preview")
+    print("warning=compare this preview with native PPTX content; missing objects may be renderer discrepancies")
     print(f"slides={slide_count}")
     print(f"pdf={delivered_pdf}")
     print(f"png_dir={output_dir}")

@@ -37,6 +37,8 @@ The scripts use:
 
 `scripts/render_pptx.py` requires LibreOffice or Apache OpenOffice and searches for `libreoffice`, `soffice`, or the standard macOS LibreOffice application path. LibreOffice is not a substitute for a final Microsoft PowerPoint compatibility check when animations, GIF playback, embedded fonts, or exact Office typography matter.
 
+Always compare the LibreOffice render with the native object/text inventory. Missing text or objects in the fallback render are evidence of a compatibility discrepancy until verified in Microsoft PowerPoint; they are not evidence that the source slide is incomplete.
+
 ## Recommended command sequence
 
 ```bash
@@ -52,5 +54,6 @@ Inspect the full-resolution slide PNGs as well as the contact sheet. Repeat the 
 
 - `python-pptx` does not preserve or expose every PowerPoint feature reliably; avoid round-tripping complex existing decks through it unless the requested change requires it and the result is fully tested.
 - LibreOffice rendering may differ from Microsoft PowerPoint in fonts, line breaking, SVG, animation, audio/video, and GIF behavior.
+- Equations, EMF, grouped drawings, Chinese fonts, and theme-dependent text can be present in the PPTX while appearing incomplete in a fallback render.
 - A successful render is execution evidence, not proof that every relationship, animation, or editable object remains semantically intact.
 - Native PowerPoint text and simple shapes remain preferable, but generating sophisticated editable decks may require a platform-specific presentation library or application automation.

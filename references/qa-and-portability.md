@@ -3,11 +3,12 @@
 ## Contents
 
 1. Content QA
-2. Structural QA
-3. Visual QA
-4. Media audit
-5. Portability test
-6. Delivery report
+2. Render-evidence QA
+3. Structural QA
+4. Visual QA
+5. Media audit
+6. Portability test
+7. Delivery report
 
 ## Content QA
 
@@ -23,6 +24,14 @@ Check:
 - data, units, formulas, commands, and code match source evidence;
 - conclusions state applicable conditions and limitations;
 - speaker notes match the visible slide when notes are requested.
+
+For instructional material, also check that code, commands, expected observations, success criteria, and deliverables form a complete experiment rather than a list of nouns or filenames.
+
+## Render-evidence QA
+
+Before reporting visual defects, compare extracted source content with the rendered output. If native text, tables, or objects exist but are absent in the render, record a renderer discrepancy and do not attribute the omission to the source deck.
+
+Use Microsoft PowerPoint rendering when Office-specific fidelity is required. LibreOffice is a fallback and may differ in fonts, equations, SVG/EMF, grouped objects, animations, GIFs, and line breaking. If no reliable render is available, limit the review to content and structure evidence and state that visual conclusions remain unverified.
 
 ## Structural QA
 
@@ -47,6 +56,8 @@ Inspect:
 - terminology annotations too far from the corresponding term;
 - logo, footer, page number, and confidentiality collisions;
 - font substitution and missing glyphs.
+
+Do not convert a renderer failure into a design criticism. Report the defect only after the source-versus-render comparison confirms it or the user verifies it in the target presentation application.
 
 Render changed pages at full resolution, then inspect a whole-deck contact sheet for consistency.
 
@@ -89,4 +100,5 @@ Report:
 - structure validation result;
 - embedded versus linked media counts;
 - moved-file test result;
+- renderer used and any unresolved renderer discrepancies;
 - canonical output path and recovery path, if retained.

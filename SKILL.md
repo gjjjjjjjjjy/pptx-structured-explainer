@@ -39,13 +39,14 @@ Do not skip directly to PPT generation unless the user explicitly asks to bypass
 ### Existing presentation
 
 1. Read and render the actual PPT with the best available PPT toolchain.
-2. Inventory slides, editable text, pictures, GIFs, notes, layouts, masters, media relationships, and existing visual conventions.
-3. Reconstruct the visible teaching/explanation chain: what the audience knows before each slide, what the slide adds, and what later slides depend on.
-4. Report gaps, abrupt terminology, repetition, ordering problems, and pages that are whole-slide pictures.
-5. Confirm the exact change boundary: unchanged, text-only edit, terminology annotation, redrawn diagram, new slide, reordered slide, or deletion.
-6. Create one sample when the requested edit changes the visual system. Obtain approval before batch edits.
-7. Modify only the confirmed scope. Preserve all other slide XML, assets, notes, and user-created diagrams.
-8. Run content, structure, visual, media-embedding, and moved-file tests before overwriting the source.
+2. Compare extracted native text/object inventory with the rendered pages. Treat mismatches as renderer uncertainty, not source defects.
+3. Inventory slides, editable text, pictures, GIFs, notes, layouts, masters, media relationships, and existing visual conventions.
+4. Reconstruct the visible teaching/explanation chain: what the audience knows before each slide, what the slide adds, and what later slides depend on.
+5. Report confirmed gaps, abrupt terminology, repetition, ordering problems, and pages that are whole-slide pictures. Label renderer-dependent observations separately.
+6. Confirm the exact change boundary: unchanged, text-only edit, terminology annotation, redrawn diagram, new slide, reordered slide, or deletion.
+7. Create one sample when the requested edit changes the visual system. Obtain approval before batch edits.
+8. Modify only the confirmed scope. Preserve all other slide XML, assets, notes, and user-created diagrams.
+9. Run content, structure, visual, media-embedding, and moved-file tests before overwriting the source.
 
 Read [references/existing-deck-workflow.md](references/existing-deck-workflow.md) before editing an existing deck.
 Read [references/toolchain.md](references/toolchain.md) before choosing tools or running bundled scripts.

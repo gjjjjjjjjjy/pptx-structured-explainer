@@ -3,11 +3,13 @@
 ## Contents
 
 1. Inventory
-2. Reconstruct the explanation chain
-3. Confirm boundaries
-4. Preserve and edit safely
-5. Sample-first rule
-6. Recovery and overwrite
+2. Establish render reliability
+3. Reconstruct the explanation chain
+4. Check teaching and experiment closure
+5. Confirm boundaries
+6. Preserve and edit safely
+7. Sample-first rule
+8. Recovery and overwrite
 
 ## Inventory
 
@@ -22,6 +24,23 @@ Use the best PPT/PPTX capability supplied by the current environment. When no de
 - user-created diagrams and pages previously confirmed by the user.
 
 Run `scripts/inventory_pptx.py` for a first structural pass, then inspect rendered pages.
+
+## Establish render reliability
+
+Never infer that source content is missing merely because a fallback render looks empty, truncated, or garbled. First compare three evidence surfaces:
+
+1. native text and object extraction from the PPTX package;
+2. a full-resolution render from the available renderer;
+3. the user's screenshot or a Microsoft PowerPoint render when exact Office fidelity matters.
+
+Classify each observation:
+
+- **confirmed source issue**: extraction and a reliable render agree;
+- **renderer discrepancy**: extraction contains content that the render omits, substitutes, or misplaces;
+- **unverified visual issue**: only a fallback renderer shows the problem;
+- **content-structure issue**: numbering, duplicated notes, terminology order, or factual wording is evident from native text and does not depend on visual rendering.
+
+When a discrepancy exists, change renderer, inspect the deck in Microsoft PowerPoint, or ask the user for a screenshot of the affected page. Do not describe an apparently empty card, table, diagram, or page as unfinished until verified. State which renderer produced every visual review.
 
 ## Reconstruct the explanation chain
 
@@ -43,6 +62,20 @@ Flag:
 - conclusions without evidence or limitations.
 
 Propose reordering, merging, or splitting, but do not apply those structural changes before user confirmation.
+
+Also compare visible slide content with speaker notes. Flag notes copied from another slide, notes that explain a different mechanism, and claims in notes that are absent from the page. Do not treat repeated notes as intentional without checking their subjects.
+
+## Check teaching and experiment closure
+
+For instructional decks, verify that the learner can move through this executable chain:
+
+```text
+concept → concrete example → formal mechanism → code location → command → observable output → completion criterion
+```
+
+Do not require every slide to contain every stage. Require the complete lesson or experiment section to provide the chain. Flag an experiment page when it lists filenames or tools but omits the working directory, command, expected output, success criterion, or deliverable.
+
+Check duration against scope. Distinguish material that must be explained in class from optional derivations, appendix content, and post-class reading. A technically correct derivation can still be misplaced when it consumes time needed for the lesson's stated hands-on outcome.
 
 ## Confirm boundaries
 
