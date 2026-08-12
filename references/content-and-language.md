@@ -96,6 +96,9 @@ Explain a term at first appearance only when it is required for the current know
 
 - What is it?
 - What role does it play here?
+- Why is it needed in this concrete input or execution state?
+
+For an abbreviation or foreign-language technical term, show the canonical expansion or source form when applicable and a concise explanation in the audience's language. If the label is not literally an acronym, state its source term instead of inventing an expansion.
 
 Do not branch into every related term. A KV Cache page may require Prefill, Decode, Token, Key, and Value; it does not automatically require a survey of every positional encoding or inference scheduler.
 
@@ -131,6 +134,8 @@ Classify a point as key when later slides, code execution, interpretation, or th
 Use a short intuition only as the entry layer. Follow it with the real entities, operations, and implementation. If the complete chain does not fit legibly, split it into “intuition”, “mechanism/calculation”, and “code/verification” slides instead of deleting the mechanism.
 
 For a mathematical point, use a small worked example before general notation. Show the operand values, operation, intermediate values, normalization or activation, final output, and how these correspond to the formula. Avoid presenting a formula without showing how data flows through it.
+
+For a mechanism introduced to handle a specific condition, show the condition with a representative input or state, then show the transformation and its effect on downstream processing. Do not introduce a corrective mechanism without first showing the condition it corrects.
 
 For a code point, name the actual file and function. Show call order, loops and branches, important state changes, input/output objects, and an observable check. Do not merely list filenames or paste an unexplained code block.
 

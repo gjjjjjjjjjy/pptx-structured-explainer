@@ -55,6 +55,8 @@ Every arrow must have an unambiguous source, destination, and meaning. Use label
 
 Use the same color for the same semantic entity across the deck. Do not assign colors merely to make adjacent cards different.
 
+Give every repeated visual mark an explicit nearby legend or annotation. State what each mark represents and how position, size, color, shape, line, fill, or repetition encodes meaning. If a mark has no defined semantic mapping, remove it rather than leaving an unexplained decorative encoding.
+
 ## Terminology in diagrams
 
 Place the term and concise explanation together:
@@ -72,6 +74,8 @@ D4
 Use a subtitle, small adjacent annotation, or node description. Avoid a detached glossary that forces cross-referencing.
 
 Explain only necessary first-use terms. Keep the explanation to one line or one sentence. If it needs more room, create a dedicated concept page.
+
+At first use, place a foreign-language term, its expanded or source form when applicable, and its audience-language meaning together. Put the explanation directly beneath the term when a diagram contains several parallel labels.
 
 ## Batch generation
 

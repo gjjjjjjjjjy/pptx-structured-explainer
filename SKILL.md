@@ -15,9 +15,11 @@ Create presentations only after resolving the knowledge structure and obtaining 
 - Use canonical domain terminology for slide titles, component names, process nodes, legends, and implementation labels. Do not invent metaphorical pseudo-terms such as “understanding tower”, “writer module”, “feature card”, or “parameter knob”. A short analogy may appear only as secondary explanatory text beside the standard term, and must never replace or rename the real concept.
 - Do not compress a key knowledge point into a few summary sentences. For every key point, explain the problem it solves, the inputs and outputs, the internal steps, the implementation location, and a concrete verification method. Use multiple slides when one page cannot carry this chain legibly.
 - Explain only professional terms necessary for the current knowledge chain. Attach the explanation at the term's first appearance, preferably inside or next to the relevant SVG/PPT element.
+- At the first appearance of an abbreviation or foreign-language technical term, show its expanded or source form when applicable and a concise audience-language explanation of its role. Do not assume that a short label is self-explanatory or invent an expansion that is not canonical.
 - Make visuals encode relationships: sequence, hierarchy, comparison, data flow, architecture, or evidence. Do not add decorative images merely to satisfy a visual quota.
+- Explain every non-decorative visual encoding in place. State what boxes, circles, cells, colors, lines, sizes, and shaded regions represent; never leave the audience to infer a symbol's semantic meaning.
 - Keep titles, ordinary text, tables, charts, shapes, and simple diagrams editable in PowerPoint. Never deliver whole-slide raster images as editable slides.
-- Embed all SVG, images, screenshots, audio, video, and GIF media. Never retain local file links.
+- Embed every SVG, image, screenshot, audio, video, and GIF inside the `.pptx` package. Never use linked-media relationships, local file paths, or web URLs as media sources in the delivered deck; the presentation must remain complete after being copied to another computer.
 - Preserve a user's confirmed diagrams, template, brand elements, notes, animations, and unaffected slides unless the user explicitly authorizes replacement.
 - Do not expose hidden chain-of-thought. Present only the concise knowledge structure, dependencies, rationale, and decisions needed for user review.
 
@@ -99,6 +101,7 @@ Do not stop at a metaphor, definition, or one-sentence conclusion. A beginner-or
 - For code mechanisms, show an execution flowchart using real repository filenames, functions, important inputs/outputs, branches, loops, and state updates. Keep the essential code or pseudocode editable beside the flow.
 - For model structures, draw a concrete architecture pictogram: components, nesting, data direction, repeated blocks, inputs/outputs, and the role of each connection. Do not substitute a row of generic cards for the architecture.
 - For each implementation page, include a verification cue such as expected shape, example output, metric trend, assertion, test name, or stopping condition.
+- When a mechanism exists because of an upstream condition or constraint, show that trigger before the mechanism. Use a concrete before/after example when useful, and explain what changes or fails if the mechanism is omitted.
 
 Read [references/content-and-language.md](references/content-and-language.md) for the required depth test and [references/svg-and-layout.md](references/svg-and-layout.md) for calculation, code-flow, and model-structure visuals.
 
@@ -197,6 +200,7 @@ Prefer a subtitle inside the SVG node or a small adjacent annotation. Avoid deta
 - Use native shapes and connectors for simple processes, cards, comparisons, and annotations.
 - Use native tables and charts whenever PowerPoint supports the required form.
 - Use embedded SVG for complex vector diagrams and embedded images only for real screenshots, photographs, complex backgrounds, or animations.
+- Package every visual asset under the PPTX media parts. A picture that merely renders from an external or local link does not satisfy delivery requirements.
 - Preserve image aspect ratio. Keep rectangular screenshots inset within rounded containers rather than allowing corners to protrude.
 - Keep code in editable monospaced text unless the request explicitly requires a real terminal screenshot.
 - Preserve notes and create speaker notes when requested; never put hidden script text on the slide.
