@@ -29,6 +29,7 @@ python -m pip install -r requirements.txt
 The scripts use:
 
 - `python-pptx` for structural inventory;
+- `lxml` for the OOXML backend required by `python-pptx`;
 - `defusedxml` for safe OOXML relationship parsing;
 - `Pillow` for contact-sheet generation;
 - `PyMuPDF` for converting rendered PDF pages to PNG.

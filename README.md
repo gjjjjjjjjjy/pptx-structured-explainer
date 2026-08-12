@@ -16,6 +16,7 @@
 - 可在没有平台专用 PPT Skill 时，使用 Python 与 LibreOffice 完成跨平台检查和渲染
 - 强制区分源文件缺陷与渲染器兼容问题，避免把漏渲染误判为页面内容缺失
 - 检查教学课件的“概念—代码—命令—结果—验收”实验闭环
+- 安装后自带 PPTX 结构读取、可编辑创建、文字替换、渲染和媒体检查工具
 
 ## 目录结构
 
@@ -30,12 +31,18 @@ pptx-structured-explainer/
 │   ├── qa-and-portability.md
 │   ├── svg-and-layout.md
 │   ├── template-and-format.md
-│   └── toolchain.md
+│   ├── toolchain.md
+│   └── pptx-operations.md
 ├── requirements.txt
+├── examples/
+│   └── minimal-deck.json
 └── scripts/
     ├── audit_media.py
+    ├── check_environment.py
+    ├── create_pptx.py
     ├── inventory_pptx.py
     ├── make_contact_sheet.py
+    ├── replace_text.py
     └── render_pptx.py
 ```
 
@@ -54,6 +61,17 @@ python -m pip install -r requirements.txt
 ```
 
 跨平台渲染脚本还需要安装 LibreOffice。完整工具选择与能力边界见 `references/toolchain.md`。
+
+没有平台专用 PPT Skill 时，可直接使用仓库内的操作脚本：
+
+```bash
+python scripts/check_environment.py
+python scripts/create_pptx.py deck.json --output deck.pptx
+python scripts/replace_text.py source.pptx replacements.json --output reviewed.pptx
+python scripts/render_pptx.py reviewed.pptx --output-dir rendered
+```
+
+详细 JSON 格式和安全边界见 `references/pptx-operations.md`。
 
 ## License
 

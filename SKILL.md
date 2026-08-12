@@ -5,7 +5,7 @@ description: Design, revise, and validate professional knowledge-explanation pre
 
 # Structured Explainer PPTX
 
-Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Prefer a capable PPT/PPTX skill supplied by the current agent environment. If none exists, use the bundled cross-platform Python and LibreOffice workflow described in [references/toolchain.md](references/toolchain.md). This skill provides the content-design, confirmation, editing, and quality-assurance workflow without requiring a vendor-specific PPT skill.
+Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Prefer a capable PPT/PPTX skill supplied by the current agent environment. If none exists, use this skill's bundled self-contained operation layer for inspection, editable creation, exact text replacement, rendering, media audit, and visual review. Read [references/pptx-operations.md](references/pptx-operations.md) before operating on PPTX files and [references/toolchain.md](references/toolchain.md) before choosing a renderer.
 
 ## Core constraints
 
@@ -50,6 +50,7 @@ Do not skip directly to PPT generation unless the user explicitly asks to bypass
 
 Read [references/existing-deck-workflow.md](references/existing-deck-workflow.md) before editing an existing deck.
 Read [references/toolchain.md](references/toolchain.md) before choosing tools or running bundled scripts.
+Read [references/pptx-operations.md](references/pptx-operations.md) when the environment does not provide another PPT/PPTX skill or when using the bundled public scripts.
 
 ## Build the knowledge chain
 
@@ -195,10 +196,18 @@ Run all checks in [references/qa-and-portability.md](references/qa-and-portabili
 Use the bundled scripts:
 
 ```bash
+python scripts/check_environment.py
 python scripts/inventory_pptx.py deck.pptx
 python scripts/audit_media.py deck.pptx
 python scripts/render_pptx.py deck.pptx --output-dir rendered
 python scripts/make_contact_sheet.py rendered --output contact-sheet.png
+```
+
+For creation and conservative text editing:
+
+```bash
+python scripts/create_pptx.py deck.json --output deck.pptx
+python scripts/replace_text.py source.pptx replacements.json --output reviewed.pptx
 ```
 
 Report what changed, what remained untouched, which elements are intentionally non-editable, validation evidence, and the final file path.

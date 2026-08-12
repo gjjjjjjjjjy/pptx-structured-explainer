@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import subprocess
 import sys
@@ -38,7 +39,7 @@ def main() -> None:
         parser.error("--dpi must be greater than zero")
 
     try:
-        import fitz
+        import pymupdf
     except ImportError:
         print(
             "PyMuPDF is required. Run: python -m pip install -r requirements.txt",
@@ -54,29 +55,39 @@ def main() -> None:
     output_dir = args.output_dir.expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.TemporaryDirectory(prefix="pptx-render-") as temporary:
-        temp_dir = Path(temporary)
-        command = [office, "--headless", "--convert-to", "pdf", "--outdir", str(temp_dir), str(deck)]
-        result = subprocess.run(command, capture_output=True, text=True, timeout=180)
-        if result.returncode != 0:
-            print(result.stdout, file=sys.stderr)
-            print(result.stderr, file=sys.stderr)
-            sys.exit(result.returncode)
+    delivered_pdf = output_dir / f"{deck.stem}.pdf"
+    if delivered_pdf.exists():
+        delivered_pdf.unlink()
+    with tempfile.TemporaryDirectory(prefix="lo-profile-") as profile:
+        command = [
+            office,
+            f"-env:UserInstallation={Path(profile).as_uri()}",
+            "--headless",
+            "--convert-to",
+            "pdf",
+            "--outdir",
+            str(output_dir),
+            str(deck),
+        ]
+        environment = os.environ.copy()
+        environment["SAL_USE_VCLPLUGIN"] = "svp"
+        result = subprocess.run(command, capture_output=True, text=True, timeout=180, env=environment)
+    if result.returncode != 0:
+        print(result.stdout, file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
+        sys.exit(result.returncode)
 
-        pdf = temp_dir / f"{deck.stem}.pdf"
-        if not pdf.is_file():
-            print(f"renderer did not create the expected PDF: {pdf}", file=sys.stderr)
-            sys.exit(3)
+    if not delivered_pdf.is_file():
+        print(f"renderer did not create the expected PDF: {delivered_pdf}", file=sys.stderr)
+        sys.exit(3)
 
-        delivered_pdf = output_dir / pdf.name
-        shutil.copy2(pdf, delivered_pdf)
-        with fitz.open(pdf) as document:
-            slide_count = len(document)
-            scale = args.dpi / 72
-            matrix = fitz.Matrix(scale, scale)
-            for index, page in enumerate(document, 1):
-                image = page.get_pixmap(matrix=matrix, alpha=False)
-                image.save(output_dir / f"slide-{index:03d}.png")
+    with pymupdf.open(delivered_pdf) as document:
+        slide_count = len(document)
+        scale = args.dpi / 72
+        matrix = pymupdf.Matrix(scale, scale)
+        for index, page in enumerate(document, 1):
+            image = page.get_pixmap(matrix=matrix, alpha=False)
+            image.save(output_dir / f"slide-{index:03d}.png")
 
     print(f"renderer={office}")
     print("render_status=fallback_preview")
