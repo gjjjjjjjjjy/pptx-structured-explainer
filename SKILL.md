@@ -99,7 +99,7 @@ If no template is supplied, confirm a minimal choice set: ratio, visual characte
 
 Do not design SVGs before the final template size and content-safe area are known.
 
-Read [references/template-and-format.md](references/template-and-format.md) for the full checklist and reporting format.
+Read [references/template-and-format.md](references/template-and-format.md) for the full checklist, Windows-compatible font policy, fallback rules, and reporting format.
 
 ## Draft the Markdown manuscript
 
