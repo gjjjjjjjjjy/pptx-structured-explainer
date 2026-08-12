@@ -26,13 +26,13 @@ Check:
 
 ## Structural QA
 
-Use the `pptx` skill's validator. For a template-derived deck, pass the original deck as the validation baseline.
+Use the strongest PPTX validator supplied by the current environment. For a template-derived deck, pass the original deck as the validation baseline when supported. Without a dedicated validator, combine `inventory_pptx.py`, `audit_media.py`, successful rendering, and manual comparison with the source deck; do not claim that this fallback proves complete OOXML correctness.
 
 Check slide count, relationships, content types, charts, media, notes, layouts, and masters. Treat any broken or unreferenced relationship as a release blocker.
 
 ## Visual QA
 
-Render every slide. Prefer Microsoft PowerPoint for the final pass when available, particularly for Chinese typography, GIF, SVG, and animations.
+Render every slide. Prefer Microsoft PowerPoint for the final pass when available, particularly for Chinese typography, GIF, SVG, and animations. Otherwise use `scripts/render_pptx.py`, which invokes LibreOffice, and disclose the renderer used.
 
 Inspect:
 

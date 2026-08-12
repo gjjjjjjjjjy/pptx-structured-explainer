@@ -13,6 +13,7 @@
 - 优先使用 PowerPoint 原生文字、形状、表格和图表，保持内容可编辑
 - 检查外部媒体链接、本地路径泄漏和缺失资源
 - 支持现有 PPT 的结构盘点、局部修改和可移植性验证
+- 可在没有平台专用 PPT Skill 时，使用 Python 与 LibreOffice 完成跨平台检查和渲染
 
 ## 目录结构
 
@@ -26,10 +27,14 @@ pptx-structured-explainer/
 │   ├── existing-deck-workflow.md
 │   ├── qa-and-portability.md
 │   ├── svg-and-layout.md
-│   └── template-and-format.md
+│   ├── template-and-format.md
+│   └── toolchain.md
+├── requirements.txt
 └── scripts/
     ├── audit_media.py
-    └── inventory_pptx.py
+    ├── inventory_pptx.py
+    ├── make_contact_sheet.py
+    └── render_pptx.py
 ```
 
 ## 使用方式
@@ -40,7 +45,13 @@ pptx-structured-explainer/
 使用 $pptx-structured-explainer 将我的主题或现有 PPT 整理成由浅入深、术语解释清晰的演示文稿。
 ```
 
-处理 `.pptx` 文件时，还需要可用的 PowerPoint/PPTX 工具链。两个辅助脚本依赖 Python，其中 `inventory_pptx.py` 需要 `python-pptx`，`audit_media.py` 需要 `defusedxml`。
+处理 `.pptx` 文件时，优先使用当前智能体环境提供的专业 PPT 工具。如果没有，可安装公开依赖：
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+跨平台渲染脚本还需要安装 LibreOffice。完整工具选择与能力边界见 `references/toolchain.md`。
 
 ## License
 

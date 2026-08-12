@@ -11,7 +11,7 @@
 
 ## Inventory
 
-Use the `pptx` skill to extract and render the actual presentation. Do not rely only on user screenshots. Inventory:
+Use the best PPT/PPTX capability supplied by the current environment. When no dedicated skill exists, use `python-pptx` for inventory and LibreOffice for rendering as described in `toolchain.md`. Do not rely only on user screenshots. Inventory:
 
 - slide number and visible title;
 - slide layout and master;

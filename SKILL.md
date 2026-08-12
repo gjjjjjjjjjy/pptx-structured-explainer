@@ -5,7 +5,7 @@ description: Design, revise, and validate professional knowledge-explanation pre
 
 # Structured Explainer PPTX
 
-Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Use the installed `pptx` skill for all PowerPoint reading, editing, rendering, and validation operations; this skill adds the content-design and confirmation workflow.
+Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Prefer a capable PPT/PPTX skill supplied by the current agent environment. If none exists, use the bundled cross-platform Python and LibreOffice workflow described in [references/toolchain.md](references/toolchain.md). This skill provides the content-design, confirmation, editing, and quality-assurance workflow without requiring a vendor-specific PPT skill.
 
 ## Core constraints
 
@@ -38,7 +38,7 @@ Do not skip directly to PPT generation unless the user explicitly asks to bypass
 
 ### Existing presentation
 
-1. Read and render the actual PPT with the `pptx` skill.
+1. Read and render the actual PPT with the best available PPT toolchain.
 2. Inventory slides, editable text, pictures, GIFs, notes, layouts, masters, media relationships, and existing visual conventions.
 3. Reconstruct the visible teaching/explanation chain: what the audience knows before each slide, what the slide adds, and what later slides depend on.
 4. Report gaps, abrupt terminology, repetition, ordering problems, and pages that are whole-slide pictures.
@@ -48,6 +48,7 @@ Do not skip directly to PPT generation unless the user explicitly asks to bypass
 8. Run content, structure, visual, media-embedding, and moved-file tests before overwriting the source.
 
 Read [references/existing-deck-workflow.md](references/existing-deck-workflow.md) before editing an existing deck.
+Read [references/toolchain.md](references/toolchain.md) before choosing tools or running bundled scripts.
 
 ## Build the knowledge chain
 
@@ -183,8 +184,8 @@ Prefer a subtitle inside the SVG node or a small adjacent annotation. Avoid deta
 Run all checks in [references/qa-and-portability.md](references/qa-and-portability.md). At minimum:
 
 1. Verify content, knowledge order, titles, terminology, examples, data, and code.
-2. Run the PPTX structural validator with the original file as baseline for template-derived decks.
-3. Render with Microsoft PowerPoint when available; inspect every slide for overflow, overlap, cropping, spacing, and font substitution.
+2. Run the strongest structural validator available, using the original file as baseline for template-derived decks when supported.
+3. Render with Microsoft PowerPoint when available; otherwise render with LibreOffice. Inspect every slide for overflow, overlap, cropping, spacing, and font substitution.
 4. Audit media: all visual media must use embedded relationships; reject external targets and absolute local paths.
 5. Copy the presentation to an unrelated temporary directory, open it there, and render again.
 6. Work on a copy. Do not overwrite the user's source until the user approves the reviewed version.
@@ -195,6 +196,8 @@ Use the bundled scripts:
 ```bash
 python scripts/inventory_pptx.py deck.pptx
 python scripts/audit_media.py deck.pptx
+python scripts/render_pptx.py deck.pptx --output-dir rendered
+python scripts/make_contact_sheet.py rendered --output contact-sheet.png
 ```
 
 Report what changed, what remained untouched, which elements are intentionally non-editable, validation evidence, and the final file path.

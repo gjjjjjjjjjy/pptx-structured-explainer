@@ -25,7 +25,7 @@ Before producing the Markdown manuscript or SVG style, confirm:
 
 ## Supplied template analysis
 
-Use the `pptx` skill to inspect and render the template. Record:
+Use the best available PPT/PPTX toolchain to inspect and render the template. If no dedicated skill exists, use the bundled inventory and rendering scripts. Record:
 
 - exact width, height, and ratio;
 - slide masters and layouts;
