@@ -1,4 +1,4 @@
 interface:
   display_name: "结构化知识 PPT 设计"
-  short_description: "自带 PPT 创建、修改、渲染与结构化讲解工作流"
-  default_prompt: "使用 $pptx-structured-explainer 分析、创建或修改我的 PPT，并完成可编辑性、渲染和媒体检查。"
+  short_description: "先确认内容与模板，再制作专业、可编辑、图文并茂的 PPT"
+  default_prompt: "使用 $pptx-structured-explainer 将我的主题或现有 PPT 整理成由浅入深、术语解释清晰的演示文稿。"

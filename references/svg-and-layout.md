@@ -8,7 +8,7 @@
 4. Batch generation
 5. Final PowerPoint conversion
 6. Layout and screenshot rules
-7. Optional generated architecture illustrations
+7. Calculation, code-flow, and model-structure visuals
 
 ## Representative style sample
 
@@ -110,21 +110,16 @@ Embed SVG for complex diagrams when the user accepts that internal SVG text is n
 - Do not paste image patches over existing text. Edit or redraw the underlying PowerPoint element.
 - Split pages instead of shrinking important text below readable projection size.
 
-## Optional generated architecture illustrations
+## Calculation, code-flow, and model-structure visuals
 
-When the user explicitly requests a refined non-SVG architecture diagram, concept illustration, cinematic system visual, or presentation artwork, use an available image-generation tool instead of forcing the result into SVG or basic PowerPoint shapes.
+### Mathematical calculation flow
 
-Use generated raster artwork only when it materially improves one of these outcomes:
+Draw calculations left to right or top to bottom as a sequence of editable operands and operators. Use one small numeric example and expose every important intermediate result. Put the general formula near the numeric path as a compact mapping, not as the only explanation. Use consistent colors for the same tensor or quantity from input through output.
 
-- spatial depth or a polished hero architecture visual;
-- a complex conceptual relationship that would look crude as simple cards;
-- consistent high-quality illustration across section covers or selected focal pages;
-- a visual metaphor that supplements, but does not replace, the formal explanation.
+### Code execution flow
 
-Before generation, specify exact slide ratio, safe area, palette, viewing direction, component hierarchy, required empty regions, and whether the image must avoid embedded text. Prefer text-free or minimally labeled artwork, then place titles, node labels, formulas, metrics, and conclusions as native PowerPoint text and shapes.
+Use real filenames and function names in monospaced editable text. Draw calls, returned values, loops, conditional branches, state updates, and saved artifacts. Place a concise code excerpt beside the corresponding flow nodes when it helps learners map visual steps to syntax. End the diagram with an expected output, assertion, metric, or stopping condition.
 
-For architecture diagrams, verify every generated component and connector against the confirmed knowledge structure. Do not accept plausible-looking invented modules, reversed arrows, unreadable pseudo-text, unsupported claims, or decorative connections. Redraw critical data-flow arrows and labels natively when semantic precision matters.
+### Model architecture pictogram
 
-Embed the final PNG or other supported raster asset at sufficient resolution for the target slide size. Preserve aspect ratio and keep one editable source prompt or generation specification with the working files. Report which elements are intentionally rasterized and therefore not directly editable.
-
-Do not use generated artwork for real experimental evidence, terminal output, charts, tables, code, citations, or screenshots. These must remain faithful to actual source data or execution evidence.
+Use nested containers to show the full model, repeated blocks, and important sublayers. Make the source and target streams visually distinct, show data direction with labeled connectors, and identify cross-component paths. Include a small legend that maps the visual metaphor to the formal component names. The illustration must preserve the real topology; do not invent decorative modules or omit a connection that is necessary to understand implementation.

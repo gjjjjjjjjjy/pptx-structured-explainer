@@ -5,15 +5,15 @@ description: Design, revise, and validate professional knowledge-explanation pre
 
 # Structured Explainer PPTX
 
-Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Prefer a capable PPT/PPTX skill supplied by the current agent environment. If none exists, use this skill's bundled self-contained operation layer for inspection, editable creation, exact text replacement, rendering, media audit, and visual review. Read [references/pptx-operations.md](references/pptx-operations.md) before operating on PPTX files and [references/toolchain.md](references/toolchain.md) before choosing a renderer.
+Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Use the installed `pptx` skill for all PowerPoint reading, editing, rendering, and validation operations; this skill adds the content-design and confirmation workflow.
 
 ## Core constraints
 
 - Explain from prerequisite concepts to mechanisms, evidence, limitations, and conclusions.
 - Use professional, precise language. Avoid excessive everyday wording and extended metaphor chains.
 - Use examples when they materially improve understanding; never replace the formal explanation with analogies.
+- Do not compress a key knowledge point into a few summary sentences. For every key point, explain the problem it solves, the inputs and outputs, the internal steps, the implementation location, and a concrete verification method. Use multiple slides when one page cannot carry this chain legibly.
 - Explain only professional terms necessary for the current knowledge chain. Attach the explanation at the term's first appearance, preferably inside or next to the relevant SVG/PPT element.
-- At the first use of an English acronym or initialism, show its standard English expansion and a concise Chinese explanation, for example `BOS (Beginning of Sequence，序列起始符)`. Do not invent expansions or expand ordinary English words as though they were acronyms.
 - Make visuals encode relationships: sequence, hierarchy, comparison, data flow, architecture, or evidence. Do not add decorative images merely to satisfy a visual quota.
 - Keep titles, ordinary text, tables, charts, shapes, and simple diagrams editable in PowerPoint. Never deliver whole-slide raster images as editable slides.
 - Embed all SVG, images, screenshots, audio, video, and GIF media. Never retain local file links.
@@ -39,19 +39,16 @@ Do not skip directly to PPT generation unless the user explicitly asks to bypass
 
 ### Existing presentation
 
-1. Read and render the actual PPT with the best available PPT toolchain.
-2. Compare extracted native text/object inventory with the rendered pages. Treat mismatches as renderer uncertainty, not source defects.
-3. Inventory slides, editable text, pictures, GIFs, notes, layouts, masters, media relationships, and existing visual conventions.
-4. Reconstruct the visible teaching/explanation chain: what the audience knows before each slide, what the slide adds, and what later slides depend on.
-5. Report confirmed gaps, abrupt terminology, repetition, ordering problems, and pages that are whole-slide pictures. Label renderer-dependent observations separately.
-6. Confirm the exact change boundary: unchanged, text-only edit, terminology annotation, redrawn diagram, new slide, reordered slide, or deletion.
-7. Create one sample when the requested edit changes the visual system. Obtain approval before batch edits.
-8. Modify only the confirmed scope. Preserve all other slide XML, assets, notes, and user-created diagrams.
-9. Run content, structure, visual, media-embedding, and moved-file tests before overwriting the source.
+1. Read and render the actual PPT with the `pptx` skill.
+2. Inventory slides, editable text, pictures, GIFs, notes, layouts, masters, media relationships, and existing visual conventions.
+3. Reconstruct the visible teaching/explanation chain: what the audience knows before each slide, what the slide adds, and what later slides depend on.
+4. Report gaps, abrupt terminology, repetition, ordering problems, and pages that are whole-slide pictures.
+5. Confirm the exact change boundary: unchanged, text-only edit, terminology annotation, redrawn diagram, new slide, reordered slide, or deletion.
+6. Create one sample when the requested edit changes the visual system. Obtain approval before batch edits.
+7. Modify only the confirmed scope. Preserve all other slide XML, assets, notes, and user-created diagrams.
+8. Run content, structure, visual, media-embedding, and moved-file tests before overwriting the source.
 
 Read [references/existing-deck-workflow.md](references/existing-deck-workflow.md) before editing an existing deck.
-Read [references/toolchain.md](references/toolchain.md) before choosing tools or running bundled scripts.
-Read [references/pptx-operations.md](references/pptx-operations.md) when the environment does not provide another PPT/PPTX skill or when using the bundled public scripts.
 
 ## Build the knowledge chain
 
@@ -82,6 +79,28 @@ Ask the user to confirm the outline and major knowledge points. Then convert the
 
 Read [references/content-and-language.md](references/content-and-language.md) when designing the outline, titles, terminology, examples, or prose.
 
+## Explain key mechanisms through implementation
+
+For each key knowledge point, build a visible explanation chain:
+
+```text
+concrete input or failure case
+→ purpose of the mechanism
+→ internal steps and state changes
+→ mathematical or algorithmic calculation
+→ code execution path
+→ observable output and verification
+```
+
+Do not stop at a metaphor, definition, or one-sentence conclusion. A beginner-oriented deck may reduce notation density, but it must still show how the result is produced.
+
+- For mathematical mechanisms, draw a calculation flow with actual small values. Label every intermediate value, operation, dimension when necessary, and final result; then map each step to the formal expression.
+- For code mechanisms, show an execution flowchart using real repository filenames, functions, important inputs/outputs, branches, loops, and state updates. Keep the essential code or pseudocode editable beside the flow.
+- For model structures, draw a concrete architecture pictogram: components, nesting, data direction, repeated blocks, inputs/outputs, and the role of each connection. Do not substitute a row of generic cards for the architecture.
+- For each implementation page, include a verification cue such as expected shape, example output, metric trend, assertion, test name, or stopping condition.
+
+Read [references/content-and-language.md](references/content-and-language.md) for the required depth test and [references/svg-and-layout.md](references/svg-and-layout.md) for calculation, code-flow, and model-structure visuals.
+
 ## Confirm the template and delivery format
 
 Ask whether the user provides a `.pptx` or `.potx` template. If so, inspect:
@@ -100,7 +119,7 @@ If no template is supplied, confirm a minimal choice set: ratio, visual characte
 
 Do not design SVGs before the final template size and content-safe area are known.
 
-Read [references/template-and-format.md](references/template-and-format.md) for the full checklist, Windows-compatible font policy, fallback rules, and reporting format.
+Read [references/template-and-format.md](references/template-and-format.md) for the full checklist and reporting format.
 
 ## Draft the Markdown manuscript
 
@@ -150,7 +169,7 @@ After the user approves this single style sample, batch-generate all SVG diagram
 
 Use SVG for complex diagrams and visual review, not as an excuse to flatten the whole presentation. In the final PPT, keep normal text and simple shapes native; embed SVG only for complex vector relationships whose editability tradeoff is acceptable.
 
-Read [references/svg-and-layout.md](references/svg-and-layout.md) before creating the style sample, selecting an image-generation route, or producing final diagrams.
+Read [references/svg-and-layout.md](references/svg-and-layout.md) before creating the style sample or final diagrams.
 
 ## Explain necessary terminology in place
 
@@ -177,7 +196,6 @@ Prefer a subtitle inside the SVG node or a small adjacent annotation. Avoid deta
 - Use native shapes and connectors for simple processes, cards, comparisons, and annotations.
 - Use native tables and charts whenever PowerPoint supports the required form.
 - Use embedded SVG for complex vector diagrams and embedded images only for real screenshots, photographs, complex backgrounds, or animations.
-- When the user explicitly wants a polished non-SVG architecture illustration or concept visual, use an available image-generation tool after confirming the editability tradeoff. Keep critical labels, formulas, evidence, and conclusions as native PowerPoint elements whenever practical.
 - Preserve image aspect ratio. Keep rectangular screenshots inset within rounded containers rather than allowing corners to protrude.
 - Keep code in editable monospaced text unless the request explicitly requires a real terminal screenshot.
 - Preserve notes and create speaker notes when requested; never put hidden script text on the slide.
@@ -188,8 +206,8 @@ Prefer a subtitle inside the SVG node or a small adjacent annotation. Avoid deta
 Run all checks in [references/qa-and-portability.md](references/qa-and-portability.md). At minimum:
 
 1. Verify content, knowledge order, titles, terminology, examples, data, and code.
-2. Run the strongest structural validator available, using the original file as baseline for template-derived decks when supported.
-3. Render with Microsoft PowerPoint when available; otherwise render with LibreOffice. Inspect every slide for overflow, overlap, cropping, spacing, and font substitution.
+2. Run the PPTX structural validator with the original file as baseline for template-derived decks.
+3. Render with Microsoft PowerPoint when available; inspect every slide for overflow, overlap, cropping, spacing, and font substitution.
 4. Audit media: all visual media must use embedded relationships; reject external targets and absolute local paths.
 5. Copy the presentation to an unrelated temporary directory, open it there, and render again.
 6. Work on a copy. Do not overwrite the user's source until the user approves the reviewed version.
@@ -198,18 +216,8 @@ Run all checks in [references/qa-and-portability.md](references/qa-and-portabili
 Use the bundled scripts:
 
 ```bash
-python scripts/check_environment.py
 python scripts/inventory_pptx.py deck.pptx
 python scripts/audit_media.py deck.pptx
-python scripts/render_pptx.py deck.pptx --output-dir rendered
-python scripts/make_contact_sheet.py rendered --output contact-sheet.png
-```
-
-For creation and conservative text editing:
-
-```bash
-python scripts/create_pptx.py deck.json --output deck.pptx
-python scripts/replace_text.py source.pptx replacements.json --output reviewed.pptx
 ```
 
 Report what changed, what remained untouched, which elements are intentionally non-editable, validation evidence, and the final file path.

@@ -9,6 +9,7 @@
 5. Examples and analogies
 6. Terminology boundaries
 7. Content density
+8. Key-point depth and implementation
 
 ## Audience and outcome
 
@@ -94,23 +95,6 @@ If a term requires more than one or two sentences, give it a dedicated slide ins
 
 Do not repeat full definitions on every slide. Use the established term normally after first explanation, unless its meaning changes in the new context.
 
-### English acronym expansion
-
-At the first appearance of an English acronym or initialism, present all three parts together:
-
-```text
-BOS (Beginning of Sequence)
-序列起始符：标记生成或序列处理的起点
-```
-
-Use the canonical English expansion from the relevant standard, paper, library, or project documentation. Preserve capitalization and singular/plural form. Do not guess an expansion from the letters.
-
-Apply the same rule to domain abbreviations such as `OOV (Out-of-Vocabulary，词表外词)`, `FFN (Feed-Forward Network，前馈网络)`, and `EOS (End of Sequence，序列结束符)` when they are necessary to the current knowledge chain.
-
-Do not force a fabricated expansion onto ordinary English terms such as `Embedding`, `Token`, `Softmax`, or `Decoder`. For these, show the original English term and a concise Chinese definition at first use.
-
-After the first complete form, use the acronym normally unless a long gap, audience change, or meaning change makes a short reminder necessary.
-
 ## Content density
 
 Aim for one primary relationship per slide. Use a second relationship only when it directly supports the first.
@@ -124,3 +108,22 @@ When a page is dense, apply this order:
 5. reduce font size only as a last resort.
 
 Do not use a diagram when a short paragraph or table communicates the idea more clearly.
+
+## Key-point depth and implementation
+
+Classify a point as key when later slides, code execution, interpretation, or the final learning outcome depends on it. A key point is not complete until the audience can answer all six questions:
+
+1. What concrete problem does it solve?
+2. What are its inputs and outputs?
+3. What happens internally, step by step?
+4. Where does the mathematical or algorithmic result come from?
+5. Where and in what order is it implemented in code?
+6. How can the learner tell that the implementation is correct?
+
+Use a short intuition only as the entry layer. Follow it with the real entities, operations, and implementation. If the complete chain does not fit legibly, split it into “intuition”, “mechanism/calculation”, and “code/verification” slides instead of deleting the mechanism.
+
+For a mathematical point, use a small worked example before general notation. Show the operand values, operation, intermediate values, normalization or activation, final output, and how these correspond to the formula. Avoid presenting a formula without showing how data flows through it.
+
+For a code point, name the actual file and function. Show call order, loops and branches, important state changes, input/output objects, and an observable check. Do not merely list filenames or paste an unexplained code block.
+
+For a model point, show both the outer data flow and the internal repeated unit. Label which component reads which state, which path is residual or cross-component, and which output is consumed next. A conceptual metaphor must be explicitly mapped to the model component it represents.
