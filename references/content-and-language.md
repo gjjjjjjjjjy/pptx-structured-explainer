@@ -94,6 +94,23 @@ If a term requires more than one or two sentences, give it a dedicated slide ins
 
 Do not repeat full definitions on every slide. Use the established term normally after first explanation, unless its meaning changes in the new context.
 
+### English acronym expansion
+
+At the first appearance of an English acronym or initialism, present all three parts together:
+
+```text
+BOS (Beginning of Sequence)
+序列起始符：标记生成或序列处理的起点
+```
+
+Use the canonical English expansion from the relevant standard, paper, library, or project documentation. Preserve capitalization and singular/plural form. Do not guess an expansion from the letters.
+
+Apply the same rule to domain abbreviations such as `OOV (Out-of-Vocabulary，词表外词)`, `FFN (Feed-Forward Network，前馈网络)`, and `EOS (End of Sequence，序列结束符)` when they are necessary to the current knowledge chain.
+
+Do not force a fabricated expansion onto ordinary English terms such as `Embedding`, `Token`, `Softmax`, or `Decoder`. For these, show the original English term and a concise Chinese definition at first use.
+
+After the first complete form, use the acronym normally unless a long gap, audience change, or meaning change makes a short reminder necessary.
+
 ## Content density
 
 Aim for one primary relationship per slide. Use a second relationship only when it directly supports the first.

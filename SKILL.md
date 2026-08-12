@@ -13,6 +13,7 @@ Create presentations only after resolving the knowledge structure and obtaining 
 - Use professional, precise language. Avoid excessive everyday wording and extended metaphor chains.
 - Use examples when they materially improve understanding; never replace the formal explanation with analogies.
 - Explain only professional terms necessary for the current knowledge chain. Attach the explanation at the term's first appearance, preferably inside or next to the relevant SVG/PPT element.
+- At the first use of an English acronym or initialism, show its standard English expansion and a concise Chinese explanation, for example `BOS (Beginning of Sequence，序列起始符)`. Do not invent expansions or expand ordinary English words as though they were acronyms.
 - Make visuals encode relationships: sequence, hierarchy, comparison, data flow, architecture, or evidence. Do not add decorative images merely to satisfy a visual quota.
 - Keep titles, ordinary text, tables, charts, shapes, and simple diagrams editable in PowerPoint. Never deliver whole-slide raster images as editable slides.
 - Embed all SVG, images, screenshots, audio, video, and GIF media. Never retain local file links.
@@ -149,7 +150,7 @@ After the user approves this single style sample, batch-generate all SVG diagram
 
 Use SVG for complex diagrams and visual review, not as an excuse to flatten the whole presentation. In the final PPT, keep normal text and simple shapes native; embed SVG only for complex vector relationships whose editability tradeoff is acceptable.
 
-Read [references/svg-and-layout.md](references/svg-and-layout.md) before creating the style sample or final diagrams.
+Read [references/svg-and-layout.md](references/svg-and-layout.md) before creating the style sample, selecting an image-generation route, or producing final diagrams.
 
 ## Explain necessary terminology in place
 
@@ -176,6 +177,7 @@ Prefer a subtitle inside the SVG node or a small adjacent annotation. Avoid deta
 - Use native shapes and connectors for simple processes, cards, comparisons, and annotations.
 - Use native tables and charts whenever PowerPoint supports the required form.
 - Use embedded SVG for complex vector diagrams and embedded images only for real screenshots, photographs, complex backgrounds, or animations.
+- When the user explicitly wants a polished non-SVG architecture illustration or concept visual, use an available image-generation tool after confirming the editability tradeoff. Keep critical labels, formulas, evidence, and conclusions as native PowerPoint elements whenever practical.
 - Preserve image aspect ratio. Keep rectangular screenshots inset within rounded containers rather than allowing corners to protrude.
 - Keep code in editable monospaced text unless the request explicitly requires a real terminal screenshot.
 - Preserve notes and create speaker notes when requested; never put hidden script text on the slide.
