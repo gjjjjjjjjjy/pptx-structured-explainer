@@ -74,6 +74,14 @@ Avoid:
 - long metaphor chains;
 - repeating the same conclusion in title, body, footer, and notes.
 
+### Canonical terms before analogies
+
+Use the standard name from the field, paper, specification, library, or repository as the visible primary label. This applies especially to titles, architecture components, calculation stages, code-flow nodes, legends, and assessment questions.
+
+Do not coin presentation-specific substitute terms such as “understanding tower”, “writer”, “feature card”, “parameter knob”, or similar labels that could be mistaken for real technical concepts. Use `Encoder`, `Decoder`, `Embedding`, `trainable parameters`, `gradient`, and other canonical terms directly.
+
+When an analogy materially helps a beginner, place it only in secondary explanatory text and map it immediately to the canonical term. Remove the analogy once the formal mechanism is introduced. Never use a metaphor as a section title, component name, or code/architecture label.
+
 Define a mechanism formally after any simplified introduction.
 
 ## Examples and analogies

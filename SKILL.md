@@ -12,6 +12,7 @@ Create presentations only after resolving the knowledge structure and obtaining 
 - Explain from prerequisite concepts to mechanisms, evidence, limitations, and conclusions.
 - Use professional, precise language. Avoid excessive everyday wording and extended metaphor chains.
 - Use examples when they materially improve understanding; never replace the formal explanation with analogies.
+- Use canonical domain terminology for slide titles, component names, process nodes, legends, and implementation labels. Do not invent metaphorical pseudo-terms such as “understanding tower”, “writer module”, “feature card”, or “parameter knob”. A short analogy may appear only as secondary explanatory text beside the standard term, and must never replace or rename the real concept.
 - Do not compress a key knowledge point into a few summary sentences. For every key point, explain the problem it solves, the inputs and outputs, the internal steps, the implementation location, and a concrete verification method. Use multiple slides when one page cannot carry this chain legibly.
 - Explain only professional terms necessary for the current knowledge chain. Attach the explanation at the term's first appearance, preferably inside or next to the relevant SVG/PPT element.
 - Make visuals encode relationships: sequence, hierarchy, comparison, data flow, architecture, or evidence. Do not add decorative images merely to satisfy a visual quota.
