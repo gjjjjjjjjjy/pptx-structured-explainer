@@ -54,9 +54,12 @@ end run
 def export_with_libreoffice(deck: Path, pdf_path: Path, soffice: str) -> None:
     with tempfile.TemporaryDirectory(prefix="pptx-render-") as temp_name:
         temp_dir = Path(temp_name)
-        subprocess.run(
+        profile_dir = temp_dir / "libreoffice-profile"
+        profile_dir.mkdir()
+        result = subprocess.run(
             [
                 soffice,
+                f"-env:UserInstallation={profile_dir.resolve().as_uri()}",
                 "--headless",
                 "--convert-to",
                 "pdf",
@@ -64,11 +67,16 @@ def export_with_libreoffice(deck: Path, pdf_path: Path, soffice: str) -> None:
                 str(temp_dir),
                 str(deck),
             ],
-            check=True,
+            check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
         )
+        if result.returncode != 0:
+            detail = result.stdout.strip() or "no LibreOffice diagnostic output"
+            raise RuntimeError(
+                f"LibreOffice conversion failed with exit code {result.returncode}: {detail}"
+            )
         pdf_candidates = list(temp_dir.glob("*.pdf"))
         if len(pdf_candidates) != 1:
             raise RuntimeError("LibreOffice did not produce exactly one PDF")

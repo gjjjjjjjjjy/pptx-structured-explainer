@@ -35,6 +35,8 @@ Run:
 
 ```bash
 python scripts/inventory_pptx.py deck.pptx
+python scripts/font_policy.py --template deck.pptx --renderer libreoffice
+python scripts/audit_pptx_fonts.py deck.pptx --libreoffice-safe
 python scripts/audit_media.py deck.pptx
 python scripts/validate_pptx.py deck.pptx
 python scripts/render_pptx.py deck.pptx --output-dir rendered
@@ -53,6 +55,17 @@ For an existing presentation, record:
 ## Create and edit
 
 Use native objects whenever the format supports them. For template-derived work, create slides from existing layouts and preserve fixed master elements instead of recreating them on each slide.
+
+For Chinese or mixed Chinese/Latin decks, select fonts from the template and the target renderer before creating native text. Keep Arial only for Latin-only runs. Write explicit DrawingML font metadata and `zh-CN` language metadata for every native run containing Han characters; LibreOffice does not reliably recover Chinese glyphs from an Arial-only run. For a LibreOffice target, split mixed Chinese/Latin runs and assign the chosen CJK font to both `a:latin` and `a:ea` on the Han runs. Use:
+
+```bash
+python scripts/font_policy.py --template template.pptx --renderer libreoffice
+python scripts/apply_cjk_fonts.py draft.pptx draft-cjk.pptx \
+  --template template.pptx --renderer libreoffice
+python scripts/audit_pptx_fonts.py draft-cjk.pptx --libreoffice-safe --strict
+```
+
+Read [references/font-compatibility.md](references/font-compatibility.md) before creating, normalizing, or diagnosing Chinese native text.
 
 When direct OOXML editing is necessary:
 
@@ -76,6 +89,8 @@ After each batch of changes:
 
 Fix clipping, overlap, font substitution, unreadable text, broken media, distorted images, ambiguous connectors, inconsistent spacing, and placeholder residue before delivery.
 
+When LibreOffice is a target or QA backend, treat an unsplit mixed-script run or a Han run whose `a:latin` and `a:ea` are not both the selected CJK font as a release failure. If `font_policy.py --renderer libreoffice` reports that no CJK font is visible, stop before building or rendering; do not assume host system fonts are visible inside a bundled LibreOffice runtime.
+
 ## Delivery report
 
 Report:
@@ -87,4 +102,3 @@ Report:
 - embedded and linked media counts;
 - rendering backend and rendered page count;
 - moved-file test result.
-

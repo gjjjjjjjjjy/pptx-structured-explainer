@@ -18,6 +18,7 @@
 - 从主题、Markdown、文档、代码仓库或现有 PPT 设计演示文稿
 - 按照由浅入深的知识依赖组织内容（概念先于机制、指标定义先于结果表、正确性先于性能）
 - 在专业术语首次出现时就近解释；缩写必须同时给出展开形式和释义
+- 根据模板、操作系统和目标渲染后端自动选择中文标题/正文字体，不把 Arial 当作中文字体
 - 先让用户选择 Structured、Hybrid、Custom 或逐图选择，再确认统一 SVG 风格并批量制作图示
 - 优先使用 PowerPoint 原生文字、形状、表格和图表，保持内容可编辑
 - 检查外部媒体链接、本地路径泄漏和缺失资源
@@ -56,7 +57,7 @@ python install.py --target both --dry-run
 
 如果目标目录已经存在，安装器默认停止，避免静默覆盖。确认更新时使用 `--force`；旧版本会移动到 Skills 目录同级的 `skills-backups/<时间戳>/`，避免备份被 Codex 或 Claude Code 误识别为可用 Skill，然后再写入新版本。
 
-`--install-deps` 会把 `python-pptx`、`defusedxml`、`Pillow` 和 `PyMuPDF` 安装到运行安装器的 Python 环境。若环境已经统一管理这些依赖，可以去掉该参数，只安装 Skills。
+`--install-deps` 会把 `python-pptx`、`defusedxml`、`Pillow`、`PyMuPDF` 和 `fontTools` 安装到运行安装器的 Python 环境。若环境已经统一管理这些依赖，可以去掉该参数，只安装 Skills。
 
 安装后可以调用 `/pptx-structured-explainer` 或 `$pptx-structured-explainer` 进入内容设计流程；实际操作文件时会配合 `pptx-operator`，复杂图示会配合 `svg-diagram-engine`。也可以直接描述任务，由 `description` 自动匹配。
 
@@ -98,11 +99,12 @@ python install.py --target both --dry-run
 | 稳定或精细生成 SVG | 仓库内置的 `svg-diagram-engine` Skill |
 | `inventory_pptx.py` | `python-pptx` |
 | `audit_media.py` | `defusedxml` |
+| 中文字体策略与渲染器字体检查 | `fontTools` |
 | 自动渲染预览 | macOS 优先使用 Microsoft PowerPoint，否则使用 LibreOffice；PNG 转换使用 Poppler 或 PyMuPDF |
 | 最终兼容性检查 | Microsoft PowerPoint（可用时） |
 
 ```bash
-pip install python-pptx defusedxml Pillow PyMuPDF
+pip install python-pptx defusedxml Pillow PyMuPDF fontTools
 ```
 
 `pptx-operator` 的自动渲染入口先生成 PDF，再转成逐页 PNG 和联系表。macOS 检测到 Microsoft PowerPoint 时优先使用它，否则回退到 LibreOffice。中文排版、GIF、SVG、动画和音视频在 LibreOffice 中可能与 PowerPoint 不完全一致，因此包含这些能力时仍应使用 Microsoft PowerPoint 做最终检查。
@@ -119,9 +121,17 @@ python scripts/audit_media.py deck.pptx
 
 # 完整 PPT 操作工具位于配套 Skill
 python companion/pptx-operator/scripts/validate_pptx.py deck.pptx
-python companion/pptx-operator/scripts/render_pptx.py deck.pptx \
+python companion/pptx-operator/scripts/font_policy.py \
+  --template deck.pptx --renderer libreoffice
+python companion/pptx-operator/scripts/apply_cjk_fonts.py \
+  deck.pptx deck-cjk.pptx --template deck.pptx --renderer libreoffice
+python companion/pptx-operator/scripts/audit_pptx_fonts.py \
+  deck-cjk.pptx --libreoffice-safe --strict
+python companion/pptx-operator/scripts/render_pptx.py deck-cjk.pptx \
   --output-dir rendered
 ```
+
+字体策略以目标渲染器实际可见的字体为准。若独立打包的 LibreOffice 看不到系统中文字体，命令会在生成前明确失败，并提示安装或配置 `Noto Sans CJK SC`，而不是继续依赖 Arial 回退并输出缺字页面。
 
 `audit_media.py` 通过时打印 `PASS`，发现问题时打印 `FAIL` 并以非零状态退出，可直接用于 CI 或提交前检查。
 
@@ -166,9 +176,13 @@ pptx-structured-explainer/
     │   ├── SKILL.md                # PPT 文件操作流程
     │   ├── agents/openai.yaml
     │   ├── references/
+    │   │   └── font-compatibility.md
     │   └── scripts/
     │       ├── inventory_pptx.py
     │       ├── audit_media.py
+    │       ├── font_policy.py
+    │       ├── apply_cjk_fonts.py
+    │       ├── audit_pptx_fonts.py
     │       ├── validate_pptx.py
     │       └── render_pptx.py
     └── svg-diagram-engine/

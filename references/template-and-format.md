@@ -32,6 +32,7 @@ Use the companion `pptx-operator` skill to inspect and render the template. Reco
 - layout names and representative pages;
 - placeholder type, position, and usable dimensions;
 - title and body fonts and sizes;
+- major/minor East Asian theme fonts, `Hans` supplemental fonts, and whether each candidate is visible to the target renderer;
 - theme and accent colors;
 - fixed master elements;
 - content-safe region after fixed elements;
@@ -63,6 +64,9 @@ Report template findings in a compact form:
 Ratio: 16:9
 Title font: ...
 Body font: ...
+Target renderer: PowerPoint / LibreOffice / other
+Title Chinese font: ... (template/system, renderer-visible: yes/no)
+Body Chinese font: ... (template/system, renderer-visible: yes/no)
 Fixed elements: logo, footer, page number, confidentiality label
 Available layouts: cover, section, single-column, two-column, closing
 Safe content area: ...
@@ -98,3 +102,5 @@ Treat an existing deck as both content and template. Confirm whether to:
 - normalize legacy fonts and spacing.
 
 Default to preserving masters, branding, confirmed diagrams, notes, and unaffected slides.
+
+For Chinese decks, do not report Arial as the Chinese font. Record Latin and East Asian fonts separately, identify the target rendering backend, and select only fonts visible to that backend. When targeting LibreOffice, split mixed-script text and require the chosen CJK font in both `a:latin` and `a:ea` on Han runs.

@@ -95,6 +95,7 @@ python scripts/svg_render.py custom.svg custom.png --scale 2
 - Use paths and decorative effects only when they clarify structure or focus.
 - Avoid `script`, `foreignObject`, external images, web fonts, and linked resources.
 - Use an explicit fallback font stack containing common Chinese and Latin fonts.
+- When a PPT template is available, obtain the renderer-visible Chinese title/body font from `pptx-operator/scripts/font_policy.py --renderer <target>` and put that font first in the SVG font stack. Do not use Arial as the primary family for Chinese SVG text.
 - Keep critical labels as PowerPoint-native text later when frequent editing is required.
 - Never flatten a whole slide into SVG merely to simplify implementation.
 

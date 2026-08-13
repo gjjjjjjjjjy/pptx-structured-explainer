@@ -34,6 +34,8 @@ Preserve paragraph and run formatting. Replace only the relevant run text when p
 
 Use real list paragraphs instead of literal bullet characters. Keep code in an editable monospaced text box. Leave sufficient width for font substitution and verify line wrapping after rendering.
 
+For Chinese native text, inspect the template font scheme and fonts visible to the target renderer before generation. For PowerPoint, set Latin and East Asian typefaces separately. For LibreOffice compatibility, split mixed-script text: Latin-only runs may use Arial, while Han runs must carry the chosen CJK font in both `a:latin` and `a:ea` plus `lang="zh-CN"`. Do not depend on font fallback or assume that a bundled renderer can see every system font.
+
 ## Images and SVG
 
 Embed all visual media in the package. Maintain the source aspect ratio. Crop only when the removed region is irrelevant. Do not cover an old element with a picture patch; edit or redraw the underlying object.
@@ -59,4 +61,3 @@ A PPTX is an OPC ZIP package. When editing XML directly, preserve:
 - XML namespaces and extension lists.
 
 After rebuilding, run the package validator and render the output. A ZIP that opens with a generic library is not necessarily accepted by PowerPoint.
-

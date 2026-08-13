@@ -49,6 +49,8 @@ Inspect:
 - logo, footer, page number, and confidentiality collisions;
 - font substitution and missing glyphs.
 
+For Chinese native text, resolve fonts against the intended backend. For LibreOffice, run the PPTX font audit with `--libreoffice-safe --strict`. LibreOffice showing only the English words of a mixed-language title is a blocking font/rendering failure even when OOXML text extraction still returns the Chinese characters. If the backend exposes no CJK font, stop instead of treating a structurally valid `a:ea` declaration as sufficient.
+
 Render changed pages at full resolution, then inspect a whole-deck contact sheet for consistency.
 
 ## Media audit

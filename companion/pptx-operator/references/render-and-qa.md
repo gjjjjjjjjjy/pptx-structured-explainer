@@ -13,6 +13,8 @@ Use Microsoft PowerPoint for the final review when the deck depends on PowerPoin
 
 Record the backend used. Do not claim PowerPoint-equivalent playback when only a static LibreOffice render was tested.
 
+LibreOffice does not reliably supply Chinese glyph fallback for native text declared only as Arial or another Latin font. Before LibreOffice rendering, resolve fonts with `font_policy.py --renderer libreoffice`, split mixed-script runs, and require `audit_pptx_fonts.py --libreoffice-safe --strict` to pass. A title that retains English words but loses Chinese text is a font/rendering failure, not a text-extraction failure. A privately bundled LibreOffice may expose only its bundled fonts; if it has no CJK font, stop and install/configure a renderer-visible CJK font or use PowerPoint.
+
 ## Structural checks
 
 Verify:
@@ -23,6 +25,7 @@ Verify:
 - every slide referenced by the presentation exists;
 - no linked image or external non-hyperlink media remains;
 - no absolute local path is embedded in XML or relationships.
+- every Han run has the renderer-visible CJK font in both `a:latin` and `a:ea`, and mixed Han/Latin text is split into separate runs when LibreOffice compatibility is required.
 
 ## Visual checks
 

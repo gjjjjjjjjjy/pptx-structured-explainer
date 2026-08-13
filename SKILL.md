@@ -19,6 +19,7 @@ Create presentations only after resolving the knowledge structure and obtaining 
 - Make visuals encode relationships: sequence, hierarchy, comparison, data flow, architecture, or evidence. Do not add decorative images merely to satisfy a visual quota.
 - Explain every non-decorative visual encoding in place. State what boxes, circles, cells, colors, lines, sizes, and shaded regions represent; never leave the audience to infer a symbol's semantic meaning.
 - Keep titles, ordinary text, tables, charts, shapes, and simple diagrams editable in PowerPoint. Never deliver whole-slide raster images as editable slides.
+- For Chinese native text, inspect the supplied template and fonts visible to the target renderer. Keep Arial only for Latin-only runs. For LibreOffice, split mixed-script runs and assign a renderer-visible CJK font explicitly to Han runs; never rely on fallback.
 - Embed every SVG, image, screenshot, audio, video, and GIF inside the `.pptx` package. Never use linked-media relationships, local file paths, or web URLs as media sources in the delivered deck; the presentation must remain complete after being copied to another computer.
 - Preserve a user's confirmed diagrams, template, brand elements, notes, animations, and unaffected slides unless the user explicitly authorizes replacement.
 - Do not expose hidden chain-of-thought. Present only the concise knowledge structure, dependencies, rationale, and decisions needed for user review.
@@ -119,6 +120,8 @@ Ask whether the user provides a `.pptx` or `.potx` template. If so, inspect:
 
 Summarize the findings and confirm which elements are immutable.
 
+Use `pptx-operator/scripts/font_policy.py --template template.pptx --renderer <target>` to resolve title/body Chinese fonts against fonts actually visible to the target renderer. If no reliable Chinese font is visible, stop before building the deck and request renderer font configuration instead of silently using Arial. A bundled LibreOffice runtime may not see the host system font library.
+
 If no template is supplied, confirm a minimal choice set: ratio, visual character, light/dark tendency, brand or preferred colors, content density, logo/footer, compatibility target, and output formats. Default to editable `.pptx`, 16:9, and PDF only as a review artifact unless the user states otherwise.
 
 Do not design SVGs before the final template size and content-safe area are known.
@@ -214,6 +217,7 @@ Prefer a subtitle inside the SVG node or a small adjacent annotation. Avoid deta
 ## Build editable PowerPoint
 
 - Use native text boxes for titles, prose, labels, code, captions, and term explanations.
+- Choose native-text fonts from the template, operating system, and target renderer. For LibreOffice, split mixed Chinese/Latin text into runs; set the CJK font in both `a:latin` and `a:ea` on Han runs, and keep Arial only on Latin-only runs.
 - Use native shapes and connectors for simple processes, cards, comparisons, and annotations.
 - Use native tables and charts whenever PowerPoint supports the required form.
 - Use embedded SVG for complex vector diagrams and embedded images only for real screenshots, photographs, complex backgrounds, or animations.
@@ -230,10 +234,11 @@ Run all checks in [references/qa-and-portability.md](references/qa-and-portabili
 1. Verify content, knowledge order, titles, terminology, examples, data, and code.
 2. Run the PPTX structural validator with the original file as baseline for template-derived decks.
 3. Render with Microsoft PowerPoint when available; inspect every slide for overflow, overlap, cropping, spacing, and font substitution.
-4. Audit media: all visual media must use embedded relationships; reject external targets and absolute local paths.
-5. Copy the presentation to an unrelated temporary directory, open it there, and render again.
-6. Work on a copy. Do not overwrite the user's source until the user approves the reviewed version.
-7. Keep one intentional recovery copy, not a trail of ambiguous “final-v2-final” files.
+4. For Chinese decks targeting LibreOffice, first run `font_policy.py --renderer libreoffice`, then run `audit_pptx_fonts.py deck.pptx --libreoffice-safe --strict`; an unsplit mixed run or Arial-only Han run is a release failure.
+5. Audit media: all visual media must use embedded relationships; reject external targets and absolute local paths.
+6. Copy the presentation to an unrelated temporary directory, open it there, and render again.
+7. Work on a copy. Do not overwrite the user's source until the user approves the reviewed version.
+8. Keep one intentional recovery copy, not a trail of ambiguous “final-v2-final” files.
 
 Use the bundled scripts:
 
