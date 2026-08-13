@@ -59,17 +59,19 @@ Give every repeated visual mark an explicit nearby legend or annotation. State w
 
 ## Terminology in diagrams
 
-Place the term and concise explanation together:
+Place the term and concise explanation together. An abbreviated node label carries its expansion at first use:
 
 ```text
-Prefill
-一次处理完整输入并建立历史状态
+<TERM>
+<one-line explanation in the audience's language>
 ```
 
 ```text
-D4
-模型深度为 4，包含 4 个 Transformer Block
+<ACRONYM> (<Expanded Form>)
+<one-line explanation in the audience's language>
 ```
+
+A label that is a naming convention rather than an acronym takes a source-term explanation instead of an invented expansion. Apply the same test to every short label: if the letters stand for words, show the words; if they do not, say what the convention means.
 
 Use a subtitle, small adjacent annotation, or node description. Avoid a detached glossary that forces cross-referencing.
 

@@ -177,12 +177,19 @@ Read [references/svg-and-layout.md](references/svg-and-layout.md) before creatin
 
 ## Explain necessary terminology in place
 
-At first appearance, show the professional term together with a short explanation, for example:
+At first appearance, show the professional term together with a short explanation. When the term is an abbreviation, the expansion is part of the explanation, not an optional extra:
 
 ```text
-TTFT
-首 Token 延迟：从提交 Prompt 到生成第一个 Token 的耗时
+<TERM>
+<short explanation of what it is and its role here>
 ```
+
+```text
+<ACRONYM> (<Expanded Form>)
+<short explanation of what it is and its role here>
+```
+
+Never show a bare acronym with only a translated gloss. A gloss tells the audience what the term measures or does; the expansion tells them what the letters stand for. Without the expansion they cannot connect the label to the literature, API parameter, CLI flag, or log field they will meet later. Write the expansion once, at first use, then use the short form freely.
 
 Use one line or one concise sentence. Explain what it is and its role in the current visual. Do not expand into adjacent topics unless the audience cannot understand the page without them.
 

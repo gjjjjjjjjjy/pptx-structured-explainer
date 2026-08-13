@@ -100,6 +100,17 @@ Explain a term at first appearance only when it is required for the current know
 
 For an abbreviation or foreign-language technical term, show the canonical expansion or source form when applicable and a concise explanation in the audience's language. If the label is not literally an acronym, state its source term instead of inventing an expansion.
 
+An expansion and a gloss are two different things, and an acronym needs both at first use:
+
+| Part | Answers | Example form |
+|---|---|---|
+| Expansion | What do the letters stand for? | `<ACRONYM>` → `<Expanded Form>` |
+| Gloss | What is it and what does it do here? | one line in the audience's language |
+
+Shipping only the gloss is the common failure: the audience can follow the current slide but cannot recognise the term in a paper, a CLI flag, or a metrics dashboard. Do not hide the expansion in speaker notes — notes are not visible to the audience during or after the talk. Put it on the slide at first use.
+
+Do not expand a term that is not an acronym — product names, library names, and ordinary technical words take a gloss alone — and do not invent an expansion you cannot source.
+
 Do not branch into every related term. A KV Cache page may require Prefill, Decode, Token, Key, and Value; it does not automatically require a survey of every positional encoding or inference scheduler.
 
 If a term requires more than one or two sentences, give it a dedicated slide instead of an oversized annotation.

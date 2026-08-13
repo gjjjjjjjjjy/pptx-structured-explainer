@@ -18,6 +18,7 @@ Check:
 - titles communicate the page purpose or conclusion;
 - prerequisites precede dependent mechanisms;
 - necessary professional terms are explained at first appearance;
+- every acronym carries its expansion on the slide at first use, not only a gloss and not only in the speaker notes;
 - definitions are concise and do not branch into unnecessary topics;
 - examples support rather than replace formal explanations;
 - data, units, formulas, commands, and code match source evidence;
