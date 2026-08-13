@@ -1,6 +1,9 @@
 # pptx-structured-explainer
 
-一个用于设计、修改和验证**专业知识讲解型 PowerPoint** 的 Skill，可用于 Claude Code 和 Codex。
+一套用于设计、修改和验证**专业知识讲解型 PowerPoint** 的 Skills，可用于 Claude Code 和 Codex。仓库包含两个可一起安装的能力：
+
+- `pptx-structured-explainer`：理解主题、组织知识链条、确认大纲和文稿、统一视觉语言；
+- `pptx-operator`：读取、创建、编辑、渲染并校验 `.pptx` / `.potx` 文件。
 
 它支持两条工作流：
 
@@ -18,29 +21,43 @@
 - 优先使用 PowerPoint 原生文字、形状、表格和图表，保持内容可编辑
 - 检查外部媒体链接、本地路径泄漏和缺失资源
 - 支持现有 PPT 的结构盘点、局部修改和可移植性验证
+- 一次安装内容设计 Skill 和 PPT 文件操作 Skill
 
 ## 安装
 
-### Claude Code
-
-Skill 目录放到下面任一位置即可被自动发现：
-
-| 位置 | 作用范围 |
-| --- | --- |
-| `~/.claude/skills/pptx-structured-explainer/` | 个人全局，所有项目可用 |
-| `<项目>/.claude/skills/pptx-structured-explainer/` | 仅该项目，可随仓库提交共享 |
+先克隆仓库，再运行安装器。安装器会同时安装 `pptx-structured-explainer` 和 `pptx-operator`：
 
 ```bash
-mkdir -p ~/.claude/skills
-git clone https://github.com/gjjjjjjjjjy/pptx-structured-explainer.git \
-  ~/.claude/skills/pptx-structured-explainer
+git clone https://github.com/gjjjjjjjjjy/pptx-structured-explainer.git
+cd pptx-structured-explainer
+python install.py --target both --install-deps
 ```
 
-安装后用 `/pptx-structured-explainer` 调用，或直接描述任务让 Claude 自行匹配（`SKILL.md` 的 `description` 字段决定匹配时机）。用 `/doctor` 可确认 Skill 已被加载。
+可选目标：
 
-### Codex
+```bash
+# 只安装到 Claude Code
+python install.py --target claude --install-deps
 
-将本目录安装到 Codex 的 Skills 目录，`agents/openai.yaml` 提供显示名称和默认提示词。
+# 只安装到 Codex
+python install.py --target codex --install-deps
+
+# 先查看安装位置，不写文件
+python install.py --target both --dry-run
+```
+
+默认安装位置：
+
+| 平台 | 目录 |
+| --- | --- |
+| Claude Code | `~/.claude/skills/` |
+| Codex | `${CODEX_HOME:-~/.codex}/skills/` |
+
+如果目标目录已经存在，安装器默认停止，避免静默覆盖。确认更新时使用 `--force`；旧目录会先被改名为带时间戳的备份，再写入新版本。
+
+`--install-deps` 会把 `python-pptx`、`defusedxml`、`Pillow` 和 `PyMuPDF` 安装到运行安装器的 Python 环境。若环境已经统一管理这些依赖，可以去掉该参数，只安装 Skills。
+
+安装后可以调用 `/pptx-structured-explainer` 或 `$pptx-structured-explainer` 进入内容设计流程；实际操作文件时会配合 `pptx-operator`。也可以直接描述任务，由 `description` 自动匹配。
 
 ## 使用方式
 
@@ -76,16 +93,17 @@ git clone https://github.com/gjjjjjjjjjy/pptx-structured-explainer.git \
 
 | 用途 | 依赖 |
 | --- | --- |
-| 读取、编辑、渲染、校验 `.pptx` | 另行安装的 `pptx` skill |
+| 读取、编辑、渲染、校验 `.pptx` | 仓库内置的 `pptx-operator` Skill |
 | `inventory_pptx.py` | `python-pptx` |
 | `audit_media.py` | `defusedxml` |
-| 最终渲染检查 | Microsoft PowerPoint（可用时） |
+| 自动渲染预览 | macOS 优先使用 Microsoft PowerPoint，否则使用 LibreOffice；PNG 转换使用 Poppler 或 PyMuPDF |
+| 最终兼容性检查 | Microsoft PowerPoint（可用时） |
 
 ```bash
-pip install python-pptx defusedxml
+pip install python-pptx defusedxml Pillow PyMuPDF
 ```
 
-本 Skill 只负责内容设计与确认流程，所有 PowerPoint 的读写、渲染和校验操作都交给 `pptx` skill 完成。渲染检查优先使用 Microsoft PowerPoint，中文排版、GIF、SVG 和动画在其他渲染器上不一定能如实复现。
+`pptx-operator` 的自动渲染入口先生成 PDF，再转成逐页 PNG 和联系表。macOS 检测到 Microsoft PowerPoint 时优先使用它，否则回退到 LibreOffice。中文排版、GIF、SVG、动画和音视频在 LibreOffice 中可能与 PowerPoint 不完全一致，因此包含这些能力时仍应使用 Microsoft PowerPoint 做最终检查。
 
 ## 辅助脚本
 
@@ -96,6 +114,11 @@ python scripts/inventory_pptx.py deck.pptx --json
 
 # 媒体审计：外链、本地路径泄漏、缺失关系目标
 python scripts/audit_media.py deck.pptx
+
+# 完整 PPT 操作工具位于配套 Skill
+python companion/pptx-operator/scripts/validate_pptx.py deck.pptx
+python companion/pptx-operator/scripts/render_pptx.py deck.pptx \
+  --output-dir rendered
 ```
 
 `audit_media.py` 通过时打印 `PASS`，发现问题时打印 `FAIL` 并以非零状态退出，可直接用于 CI 或提交前检查。
@@ -104,6 +127,8 @@ python scripts/audit_media.py deck.pptx
 
 ```text
 pptx-structured-explainer/
+├── install.py                      # 同时安装两个 Skills
+├── requirements.txt               # PPT 操作脚本的 Python 依赖
 ├── SKILL.md                        # 主流程与核心约束
 ├── agents/
 │   └── openai.yaml                 # Codex 界面配置
@@ -113,12 +138,22 @@ pptx-structured-explainer/
 │   ├── qa-and-portability.md       # 内容/结构/视觉/媒体/可移植性检查清单
 │   ├── svg-and-layout.md           # SVG 风格、版面与图示规范
 │   └── template-and-format.md      # 模板检查与交付格式确认
-└── scripts/
-    ├── audit_media.py
-    └── inventory_pptx.py
+├── scripts/
+│   ├── audit_media.py
+│   └── inventory_pptx.py
+└── companion/
+    └── pptx-operator/
+        ├── SKILL.md                # PPT 文件操作流程
+        ├── agents/openai.yaml
+        ├── references/
+        └── scripts/
+            ├── inventory_pptx.py
+            ├── audit_media.py
+            ├── validate_pptx.py
+            └── render_pptx.py
 ```
 
-`SKILL.md` 是入口，`references/` 按需加载——不必一次读完。
+两个 `SKILL.md` 分别负责内容设计与文件操作，`references/` 按需加载。仓库中的 PPT 操作代码为独立的 MIT 实现，不包含或复制其他专有 PPT Skill 的代码。
 
 ## License
 

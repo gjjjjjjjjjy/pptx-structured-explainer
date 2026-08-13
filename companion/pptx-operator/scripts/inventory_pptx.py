@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Print a compact structural inventory for a PPTX/POTX file."""
+"""Print a recursive structural inventory for a PPTX or POTX file."""
 
 from __future__ import annotations
 
@@ -12,7 +12,6 @@ from pptx.enum.shapes import MSO_SHAPE_TYPE
 
 
 def walk_shapes(shapes):
-    """Yield top-level shapes and every shape nested inside a group."""
     for shape in shapes:
         yield shape
         if shape.shape_type == MSO_SHAPE_TYPE.GROUP:
@@ -20,7 +19,7 @@ def walk_shapes(shapes):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("deck", type=Path)
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
@@ -29,41 +28,57 @@ def main() -> None:
     rows = []
     for index, slide in enumerate(prs.slides, 1):
         texts = []
-        pictures = charts = tables = media = 0
-        top_level_shapes = len(slide.shapes)
-        nested_shapes = 0
-        for shape in walk_shapes(slide.shapes):
-            nested_shapes += 1
+        counts = {
+            "pictures": 0,
+            "groups": 0,
+            "charts": 0,
+            "tables": 0,
+            "media_shapes": 0,
+        }
+        image_types = {}
+        all_shapes = list(walk_shapes(slide.shapes))
+        for shape in all_shapes:
+            if shape.shape_type == MSO_SHAPE_TYPE.GROUP:
+                counts["groups"] += 1
             if getattr(shape, "has_text_frame", False):
                 value = shape.text.strip()
                 if value:
                     texts.append(value.replace("\n", " / "))
             if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
-                pictures += 1
+                counts["pictures"] += 1
+                try:
+                    ext = shape.image.ext.lower()
+                except Exception:
+                    ext = "unknown"
+                image_types[ext] = image_types.get(ext, 0) + 1
             if getattr(shape, "has_chart", False):
-                charts += 1
+                counts["charts"] += 1
             if getattr(shape, "has_table", False):
-                tables += 1
+                counts["tables"] += 1
             if shape.shape_type == MSO_SHAPE_TYPE.MEDIA:
-                media += 1
+                counts["media_shapes"] += 1
 
-        title = texts[0][:120] if texts else ""
+        title = ""
+        if slide.shapes.title is not None:
+            title = slide.shapes.title.text.strip().replace("\n", " / ")[:160]
+        if not title and texts:
+            title = texts[0][:160]
+
         notes = ""
         try:
             notes = slide.notes_slide.notes_text_frame.text.strip()
         except Exception:
             pass
+
         rows.append(
             {
                 "slide": index,
                 "title_or_first_text": title,
+                "top_level_shapes": len(slide.shapes),
+                "all_shapes_including_groups": len(all_shapes),
                 "editable_text_shapes": len(texts),
-                "pictures": pictures,
-                "charts": charts,
-                "tables": tables,
-                "media_shapes": media,
-                "top_level_shapes": top_level_shapes,
-                "all_shapes_including_groups": nested_shapes,
+                **counts,
+                "image_types": image_types,
                 "has_notes": bool(notes),
                 "layout": slide.slide_layout.name,
             }
@@ -86,8 +101,9 @@ def main() -> None:
     )
     for row in rows:
         print(
-            f"{row['slide']:02d} | text={row['editable_text_shapes']:2d} "
-            f"pic={row['pictures']:2d} chart={row['charts']} table={row['tables']} "
+            f"{row['slide']:02d} | shapes={row['all_shapes_including_groups']:3d} "
+            f"text={row['editable_text_shapes']:2d} pic={row['pictures']:2d} "
+            f"group={row['groups']:2d} chart={row['charts']} table={row['tables']} "
             f"media={row['media_shapes']} notes={'yes' if row['has_notes'] else 'no'} "
             f"| {row['title_or_first_text']}"
         )
@@ -95,3 +111,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

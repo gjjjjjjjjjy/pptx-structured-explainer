@@ -11,7 +11,7 @@
 
 ## Inventory
 
-Use the `pptx` skill to extract and render the actual presentation. Do not rely only on user screenshots. Inventory:
+Use the companion `pptx-operator` skill to extract and render the actual presentation. Do not rely only on user screenshots. Inventory:
 
 - slide number and visible title;
 - slide layout and master;

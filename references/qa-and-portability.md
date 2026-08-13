@@ -27,7 +27,7 @@ Check:
 
 ## Structural QA
 
-Use the `pptx` skill's validator. For a template-derived deck, pass the original deck as the validation baseline.
+Use the companion `pptx-operator` skill's package validator and media audit. When the active environment provides a stronger Office schema validator, run that as an additional check and use the original deck as the baseline for template-derived work.
 
 Check slide count, relationships, content types, charts, media, notes, layouts, and masters. Treat any broken or unreferenced relationship as a release blocker.
 

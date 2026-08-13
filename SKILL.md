@@ -5,7 +5,7 @@ description: Design, revise, and validate professional knowledge-explanation pre
 
 # Structured Explainer PPTX
 
-Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Use the installed `pptx` skill for all PowerPoint reading, editing, rendering, and validation operations; this skill adds the content-design and confirmation workflow.
+Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Use the companion `pptx-operator` skill for all PowerPoint reading, editing, rendering, and validation operations; this skill adds the content-design and confirmation workflow. If `pptx-operator` is unavailable, stop before changing a PowerPoint file and tell the user to run this repository's installer.
 
 ## Core constraints
 
@@ -42,7 +42,7 @@ Do not skip directly to PPT generation unless the user explicitly asks to bypass
 
 ### Existing presentation
 
-1. Read and render the actual PPT with the `pptx` skill.
+1. Read and render the actual PPT with the `pptx-operator` skill.
 2. Inventory slides, editable text, pictures, GIFs, notes, layouts, masters, media relationships, and existing visual conventions.
 3. Reconstruct the visible teaching/explanation chain: what the audience knows before each slide, what the slide adds, and what later slides depend on.
 4. Report gaps, abrupt terminology, repetition, ordering problems, and pages that are whole-slide pictures.
