@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parent
-EXPLAINER_FILES = ("SKILL.md", "agents", "references", "scripts", "LICENSE")
+EXPLAINER_FILES = ("SKILL.md", "agents", "references", "scripts", "tests", "LICENSE")
 COMPANION_NAMES = ("pptx-operator", "svg-diagram-engine")
 REQUIREMENTS = REPO_ROOT / "requirements.txt"
 

@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import re
 import sys
 from pathlib import Path
@@ -15,6 +17,9 @@ SVG_NS = "http://www.w3.org/2000/svg"
 XLINK_NS = "http://www.w3.org/1999/xlink"
 FORBIDDEN_TAGS = {"script", "foreignObject", "iframe", "audio", "video"}
 URL_RE = re.compile(r"url\(([^)]+)\)", re.I)
+EMBEDDED_IMAGE_RE = re.compile(
+    r"^data:image/(?P<mime>png|jpe?g|webp);base64,(?P<data>[A-Za-z0-9+/=\s]+)$", re.I
+)
 
 
 def local_name(tag: str) -> str:
@@ -60,6 +65,27 @@ def check_bounds(element, width: float, height: float, warnings: list[str]) -> N
         warnings.append(f"<{tag}> has a simple coordinate outside the viewBox")
 
 
+def embedded_image_error(href: str) -> str | None:
+    match = EMBEDDED_IMAGE_RE.fullmatch(href)
+    if not match:
+        return "only PNG, JPEG, or WebP base64 data URIs are allowed for embedded SVG images"
+    try:
+        payload = base64.b64decode(re.sub(r"\s+", "", match.group("data")), validate=True)
+    except (binascii.Error, ValueError):
+        return "embedded SVG image has invalid base64 data"
+    if not payload:
+        return "embedded SVG image payload is empty"
+    mime = match.group("mime").casefold()
+    valid_signature = (
+        mime == "png" and payload.startswith(b"\x89PNG\r\n\x1a\n")
+        or mime in {"jpg", "jpeg"} and payload.startswith(b"\xff\xd8")
+        or mime == "webp" and payload.startswith(b"RIFF") and payload[8:12] == b"WEBP"
+    )
+    if not valid_signature:
+        return "embedded SVG image bytes do not match the declared media type"
+    return None
+
+
 def validate(path: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -102,7 +128,12 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
 
         href = element.attrib.get("href") or element.attrib.get(f"{{{XLINK_NS}}}href")
         if href and not href.startswith("#"):
-            errors.append(f"external href is not portable: {href[:80]}")
+            if tag == "image" and href.startswith("data:image/"):
+                error = embedded_image_error(href)
+                if error:
+                    errors.append(error)
+            else:
+                errors.append(f"external href is not portable: {href[:80]}")
         for key, value in element.attrib.items():
             if key.lower().startswith("on"):
                 errors.append(f"event handler attribute is forbidden: {key}")

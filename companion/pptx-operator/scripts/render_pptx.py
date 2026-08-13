@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 
@@ -35,6 +36,7 @@ on run argv
     set outputPath to item 2 of argv
     tell application "Microsoft PowerPoint"
         activate
+        delay 1
         open POSIX file inputPath
         set currentPresentation to active presentation
         save currentPresentation in (POSIX file outputPath) as save as PDF
@@ -42,18 +44,23 @@ on run argv
     end tell
 end run
 '''
-    result = subprocess.run(
-        ["osascript", "-e", script, str(deck), str(pdf_path)],
-        check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
-    if result.returncode != 0:
-        detail = result.stdout.strip() or "no Microsoft PowerPoint automation diagnostic output"
-        raise RuntimeError(
-            f"Microsoft PowerPoint export failed with exit code {result.returncode}: {detail}"
+    result = None
+    for attempt in range(2):
+        result = subprocess.run(
+            ["osascript", "-e", script, str(deck), str(pdf_path)],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
         )
+        if result.returncode == 0:
+            return
+        if attempt == 0:
+            time.sleep(1)
+    detail = result.stdout.strip() or "no Microsoft PowerPoint automation diagnostic output"
+    raise RuntimeError(
+        f"Microsoft PowerPoint export failed with exit code {result.returncode}: {detail}"
+    )
 
 
 def export_with_libreoffice(deck: Path, pdf_path: Path, soffice: str) -> None:

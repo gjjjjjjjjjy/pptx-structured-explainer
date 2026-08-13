@@ -64,6 +64,7 @@ python scripts/audit_media.py deck.pptx
 Require:
 
 - every image, SVG, screenshot, GIF, audio, and video asset be physically stored inside the `.pptx` package;
+- every raster image used inside an SVG be embedded as a validated base64 data URI rather than a local, HTTP, or relative path;
 - all DrawingML picture references use `r:embed`;
 - no `r:link` picture references;
 - no `TargetMode="External"` media relationships;

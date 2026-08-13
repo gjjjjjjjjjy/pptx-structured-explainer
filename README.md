@@ -20,6 +20,7 @@
 - 在专业术语首次出现时就近解释；缩写必须同时给出展开形式和释义
 - 根据模板、操作系统和目标渲染后端自动选择中文标题/正文字体，不把 Arial 当作中文字体
 - 检查并修复 PowerPoint 会触发文件修复的负宽度/负高度连接线几何
+- 自带轻量回归 harness，覆盖 SVG 内嵌位图、PPTX 内嵌 SVG/PNG、外链拦截和移动目录验证
 - 先让用户选择 Structured、Hybrid、Custom 或逐图选择，再确认统一 SVG 风格并批量制作图示
 - 优先使用 PowerPoint 原生文字、形状、表格和图表，保持内容可编辑
 - 检查外部媒体链接、本地路径泄漏和缺失资源
@@ -136,6 +137,23 @@ python companion/pptx-operator/scripts/render_pptx.py deck-cjk.pptx \
 
 字体策略以目标渲染器实际可见的字体为准。若独立打包的 LibreOffice 看不到系统中文字体，命令会在生成前明确失败，并提示安装或配置 `Noto Sans CJK SC`，而不是继续依赖 Arial 回退并输出缺字页面。
 
+## 回归测试 harness
+
+普通结构回归不依赖桌面演示软件：
+
+```bash
+python tests/run_harness.py
+```
+
+在安装了 PowerPoint 或 LibreOffice 的环境中，可增加真实移动渲染：
+
+```bash
+python tests/run_harness.py --render-backend powerpoint
+python tests/run_harness.py --render-backend libreoffice
+```
+
+需要保留生成的 PPTX、SVG、PNG 和渲染结果时，增加 `--artifacts-dir ./harness-artifacts`。harness 会新建独立子目录，不覆盖已有文件。当前用例覆盖中文字体 run 修复、Windows 字体中英文别名、负连接线检测与归一化、Structured SVG、SVG 内部 base64 位图、PPTX 包内 SVG/PNG、外部关系和 SVG 内部外链拦截、删除源素材后的移动目录校验。
+
 `audit_media.py` 通过时打印 `PASS`，发现问题时打印 `FAIL` 并以非零状态退出，可直接用于 CI 或提交前检查。
 
 SVG 图示可独立运行：
@@ -174,6 +192,8 @@ pptx-structured-explainer/
 ├── scripts/
 │   ├── audit_media.py
 │   └── inventory_pptx.py
+├── tests/
+│   └── run_harness.py             # 一键回归测试与临时 fixture 生成
 └── companion/
     ├── pptx-operator/
     │   ├── SKILL.md                # PPT 文件操作流程

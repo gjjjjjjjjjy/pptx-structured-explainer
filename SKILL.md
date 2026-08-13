@@ -249,3 +249,7 @@ python scripts/audit_media.py deck.pptx
 ```
 
 Report what changed, what remained untouched, which elements are intentionally non-editable, validation evidence, and the final file path.
+
+## Maintainer regression harness
+
+After changing this skill bundle or either companion, run `python tests/run_harness.py`. Add `--render-backend powerpoint` or `--render-backend libreoffice` when that application is available. The harness generates temporary fixtures and covers Chinese font runs, Windows font aliases, invalid connector geometry, structured SVG generation, SVG-contained base64 images, PPTX-contained SVG/PNG media, external-reference rejection, and moved-directory portability. Do not turn an unavailable desktop renderer into a mandatory gate for ordinary authoring work.

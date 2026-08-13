@@ -25,6 +25,7 @@ Read [references/operations.md](references/operations.md) before creating or edi
 - Do not set an entire text frame through a convenience property when run-level formatting must survive; edit the relevant runs and paragraphs.
 - Keep titles, ordinary text, code, simple shapes, tables, and supported charts native and editable.
 - Embed images, SVGs, GIFs, audio, and video inside the package. Ordinary citation hyperlinks may remain external; linked media may not.
+- If an embedded SVG contains a raster image, require a validated base64 `data:image/png|jpeg|webp` URI. Reject local, HTTP, and relative image references inside the SVG media part.
 - Use real screenshots only for terminal output, application interfaces, photographs, or other evidence that should remain a picture.
 - Preserve aspect ratios and keep rectangular screenshots inside their frames.
 - Do not infer visual correctness from XML alone. Render and inspect the result.
@@ -44,6 +45,8 @@ python scripts/render_pptx.py deck.pptx --output-dir rendered
 ```
 
 The inventory recursively visits grouped shapes. Treat it as structural evidence, not a substitute for rendered-slide inspection.
+
+The media audit checks both OOXML relationships and image references inside packaged SVG files. A PPTX is not portable merely because the `.svg` file exists under `ppt/media/`; every SVG/PNG relationship must be internal, and any bitmap used inside an SVG must be embedded as a data URI.
 
 For an existing presentation, record:
 
