@@ -1,0 +1,24 @@
+{
+  "type": "task-tree",
+  "title": "第五课实验任务",
+  "subtitle": "先保证正确，再比较性能",
+  "root": "C500推理实验",
+  "tasks": [
+    {
+      "title": "任务1（必做）",
+      "tone": "blue",
+      "items": [
+        {"label": "任务说明", "text": "完成Cache与No Cache推理对照"},
+        {"label": "验收标准", "text": "输出一致，并记录TTFT、TPOT、TPS和E2E"}
+      ]
+    },
+    {
+      "title": "任务2（选做）",
+      "tone": "green",
+      "items": [
+        {"label": "任务说明", "text": "改变Prompt长度和Batch Size"},
+        {"label": "验收标准", "text": "完成对比表并解释性能变化"}
+      ]
+    }
+  ]
+}

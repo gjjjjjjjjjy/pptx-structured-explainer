@@ -1,0 +1,15 @@
+{
+  "background": "#FFFFFF",
+  "surface": "#F7F8FC",
+  "surface_alt": "#EEF4FF",
+  "text": "#172033",
+  "muted": "#667085",
+  "line": "#CBD5E1",
+  "accent": "#8A1C7C",
+  "blue": "#2F80ED",
+  "green": "#168A68",
+  "orange": "#F59E0B",
+  "red": "#D64545",
+  "purple": "#7C4DFF",
+  "font_family": "Arial, 'Microsoft YaHei', 'PingFang SC', sans-serif"
+}

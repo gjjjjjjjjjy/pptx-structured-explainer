@@ -1,9 +1,10 @@
 # pptx-structured-explainer
 
-一套用于设计、修改和验证**专业知识讲解型 PowerPoint** 的 Skills，可用于 Claude Code 和 Codex。仓库包含两个可一起安装的能力：
+一套用于设计、修改和验证**专业知识讲解型 PowerPoint** 的 Skills，可用于 Claude Code 和 Codex。仓库包含三个可一起安装的能力：
 
 - `pptx-structured-explainer`：理解主题、组织知识链条、确认大纲和文稿、统一视觉语言；
-- `pptx-operator`：读取、创建、编辑、渲染并校验 `.pptx` / `.potx` 文件。
+- `pptx-operator`：读取、创建、编辑、渲染并校验 `.pptx` / `.potx` 文件；
+- `svg-diagram-engine`：弱模型用结构化 JSON 稳定出图，强模型用 Custom / Hybrid 模式精绘，并统一完成 SVG 校验与 PNG 预览。
 
 它支持两条工作流：
 
@@ -17,15 +18,15 @@
 - 从主题、Markdown、文档、代码仓库或现有 PPT 设计演示文稿
 - 按照由浅入深的知识依赖组织内容（概念先于机制、指标定义先于结果表、正确性先于性能）
 - 在专业术语首次出现时就近解释；缩写必须同时给出展开形式和释义
-- 先确认统一 SVG 风格，再批量制作图示
+- 先让用户选择 Structured、Hybrid、Custom 或逐图选择，再确认统一 SVG 风格并批量制作图示
 - 优先使用 PowerPoint 原生文字、形状、表格和图表，保持内容可编辑
 - 检查外部媒体链接、本地路径泄漏和缺失资源
 - 支持现有 PPT 的结构盘点、局部修改和可移植性验证
-- 一次安装内容设计 Skill 和 PPT 文件操作 Skill
+- 一次安装内容设计、PPT 文件操作和 SVG 图示 Skill
 
 ## 安装
 
-先克隆仓库，再运行安装器。安装器会同时安装 `pptx-structured-explainer` 和 `pptx-operator`：
+先克隆仓库，再运行安装器。安装器会同时安装 `pptx-structured-explainer`、`pptx-operator` 和 `svg-diagram-engine`：
 
 ```bash
 git clone https://github.com/gjjjjjjjjjy/pptx-structured-explainer.git
@@ -53,11 +54,11 @@ python install.py --target both --dry-run
 | Claude Code | `~/.claude/skills/` |
 | Codex | `${CODEX_HOME:-~/.codex}/skills/` |
 
-如果目标目录已经存在，安装器默认停止，避免静默覆盖。确认更新时使用 `--force`；旧目录会先被改名为带时间戳的备份，再写入新版本。
+如果目标目录已经存在，安装器默认停止，避免静默覆盖。确认更新时使用 `--force`；旧版本会移动到 Skills 目录同级的 `skills-backups/<时间戳>/`，避免备份被 Codex 或 Claude Code 误识别为可用 Skill，然后再写入新版本。
 
 `--install-deps` 会把 `python-pptx`、`defusedxml`、`Pillow` 和 `PyMuPDF` 安装到运行安装器的 Python 环境。若环境已经统一管理这些依赖，可以去掉该参数，只安装 Skills。
 
-安装后可以调用 `/pptx-structured-explainer` 或 `$pptx-structured-explainer` 进入内容设计流程；实际操作文件时会配合 `pptx-operator`。也可以直接描述任务，由 `description` 自动匹配。
+安装后可以调用 `/pptx-structured-explainer` 或 `$pptx-structured-explainer` 进入内容设计流程；实际操作文件时会配合 `pptx-operator`，复杂图示会配合 `svg-diagram-engine`。也可以直接描述任务，由 `description` 自动匹配。
 
 ## 使用方式
 
@@ -94,6 +95,7 @@ python install.py --target both --dry-run
 | 用途 | 依赖 |
 | --- | --- |
 | 读取、编辑、渲染、校验 `.pptx` | 仓库内置的 `pptx-operator` Skill |
+| 稳定或精细生成 SVG | 仓库内置的 `svg-diagram-engine` Skill |
 | `inventory_pptx.py` | `python-pptx` |
 | `audit_media.py` | `defusedxml` |
 | 自动渲染预览 | macOS 优先使用 Microsoft PowerPoint，否则使用 LibreOffice；PNG 转换使用 Poppler 或 PyMuPDF |
@@ -123,11 +125,29 @@ python companion/pptx-operator/scripts/render_pptx.py deck.pptx \
 
 `audit_media.py` 通过时打印 `PASS`，发现问题时打印 `FAIL` 并以非零状态退出，可直接用于 CI 或提交前检查。
 
+SVG 图示可独立运行：
+
+```bash
+# 弱模型：JSON 规范 → 稳定 SVG
+python companion/svg-diagram-engine/scripts/diagram_render.py \
+  companion/svg-diagram-engine/assets/examples/task-tree.json task-tree.svg
+
+# 所有模式共用：校验 → PNG 预览
+python companion/svg-diagram-engine/scripts/svg_validate.py task-tree.svg --strict
+python companion/svg-diagram-engine/scripts/svg_render.py task-tree.svg task-tree.png
+```
+
+仓库同时提供绘图模式选择图以及 Structured、Hybrid、Custom 三种样张，位于 `companion/svg-diagram-engine/assets/examples/`。Skill 可以先展示选择图，再由用户决定整套统一模式或逐图选择。
+
+PNG 预览不启动浏览器，依次尝试 `resvg`、`rsvg-convert`、Sharp 和 CairoSVG；找到第一个可用后端即使用。Codex 可直接发现其运行时内置的 Sharp，Claude Code 也可使用当前项目或 `NODE_PATH` 中的 Sharp。SVG 源文件始终保留为最终矢量资产。
+
+若 Claude Code 环境没有上述后端，可在项目中执行 `npm install sharp`，然后用 `--backend sharp` 固定渲染后端；这条路径不依赖 Chrome、Chromium 或浏览器自动化。
+
 ## 目录结构
 
 ```text
 pptx-structured-explainer/
-├── install.py                      # 同时安装两个 Skills
+├── install.py                      # 同时安装三个 Skills
 ├── requirements.txt               # PPT 操作脚本的 Python 依赖
 ├── SKILL.md                        # 主流程与核心约束
 ├── agents/
@@ -142,18 +162,27 @@ pptx-structured-explainer/
 │   ├── audit_media.py
 │   └── inventory_pptx.py
 └── companion/
-    └── pptx-operator/
-        ├── SKILL.md                # PPT 文件操作流程
-        ├── agents/openai.yaml
-        ├── references/
+    ├── pptx-operator/
+    │   ├── SKILL.md                # PPT 文件操作流程
+    │   ├── agents/openai.yaml
+    │   ├── references/
+    │   └── scripts/
+    │       ├── inventory_pptx.py
+    │       ├── audit_media.py
+    │       ├── validate_pptx.py
+    │       └── render_pptx.py
+    └── svg-diagram-engine/
+        ├── SKILL.md                # 稳定出图与精绘流程
+        ├── references/             # JSON 规范与 Custom 模式规则
+        ├── assets/                 # 主题和示例
         └── scripts/
-            ├── inventory_pptx.py
-            ├── audit_media.py
-            ├── validate_pptx.py
-            └── render_pptx.py
+            ├── diagram_render.py
+            ├── svg_validate.py
+            ├── svg_render.py
+            └── svg_contact_sheet.py
 ```
 
-两个 `SKILL.md` 分别负责内容设计与文件操作，`references/` 按需加载。仓库中的 PPT 操作代码为独立的 MIT 实现，不包含或复制其他专有 PPT Skill 的代码。
+三个 `SKILL.md` 分别负责内容设计、PPT 文件操作与 SVG 图示生成，`references/` 按需加载。仓库中的实现均采用 MIT License，不包含或复制其他专有 PPT Skill 的代码。
 
 ## License
 

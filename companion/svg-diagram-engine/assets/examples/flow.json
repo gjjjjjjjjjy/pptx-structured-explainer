@@ -1,0 +1,18 @@
+{
+  "type": "flow",
+  "title": "NanoChat 推理执行路径",
+  "subtitle": "从 Prompt 到逐 Token 输出",
+  "canvas": {"width": 1600, "height": 900},
+  "direction": "horizontal",
+  "nodes": [
+    {"id": "a", "title": "Prompt", "description": "输入 Token 序列"},
+    {"id": "b", "title": "Prefill", "description": "并行计算并写入历史 K / V"},
+    {"id": "c", "title": "Decode", "description": "读取 Cache，逐 Token 生成"},
+    {"id": "d", "title": "Output", "description": "返回生成 Token"}
+  ],
+  "edges": [
+    {"from": "a", "to": "b"},
+    {"from": "b", "to": "c", "label": "KV Cache"},
+    {"from": "c", "to": "d"}
+  ]
+}

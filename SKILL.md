@@ -5,7 +5,7 @@ description: Design, revise, and validate professional knowledge-explanation pre
 
 # Structured Explainer PPTX
 
-Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Use the companion `pptx-operator` skill for all PowerPoint reading, editing, rendering, and validation operations; this skill adds the content-design and confirmation workflow. If `pptx-operator` is unavailable, stop before changing a PowerPoint file and tell the user to run this repository's installer.
+Create presentations only after resolving the knowledge structure and obtaining the required user confirmations. Use the companion `pptx-operator` skill for all PowerPoint reading, editing, rendering, and validation operations. Use the companion `svg-diagram-engine` skill for structured, custom, or hybrid SVG diagrams and their validation. If either companion is unavailable for a task that needs it, stop before the relevant file operation and tell the user to run this repository's installer.
 
 ## Core constraints
 
@@ -34,7 +34,7 @@ Follow all confirmation gates in order:
 3. Confirm the PPT template, slide ratio, branding, editability, compatibility, notes/animation needs, and delivery formats.
 4. Propose and confirm the slide titles.
 5. Draft and confirm the complete Markdown slide manuscript.
-6. Produce one representative SVG style sample and confirm the unified visual language.
+6. Present the SVG drawing-mode choices, record the user's selection, then produce one representative SVG style sample and confirm the unified visual language.
 7. Batch-generate all SVG diagrams and provide a thumbnail overview for review.
 8. Build the editable PowerPoint, render it, validate it, and perform portability QA.
 
@@ -160,6 +160,16 @@ Obtain user approval of the Markdown manuscript before visual production.
 
 ## Confirm one SVG style, then batch-generate
 
+Choose the SVG production mode before drawing the representative sample:
+
+- **Structured mode** for weaker models, repeated diagrams, or predictable flow/tree/comparison/timeline/matrix layouts. The model emits constrained JSON and `svg-diagram-engine` calculates coordinates, wrapping, connectors, and theme styles.
+- **Custom mode** for mechanism diagrams whose topology, visual hierarchy, or visual polish cannot be expressed by a standard layout. A capable model authors static SVG directly under the same validation rules.
+- **Hybrid mode** for a deterministic structured base with a small custom explanatory overlay. Preserve the generated geometry and keep enhancement local.
+
+Present these three modes to the user as an explicit choice. Also offer **Mixed by diagram（逐图选择）** for decks that combine routine diagrams with complex mechanisms. Recommend one option based on the confirmed manuscript, but let the user override it. Only choose without a reply when the user has explicitly delegated visual decisions; in that case, state the chosen mode before creating the representative sample.
+
+Do not ask a weak model to improvise hundreds of raw coordinates. Do not force a strong model into generic cards when a custom mechanism diagram would explain the content more accurately.
+
 Create one representative SVG page that demonstrates:
 
 - title and type hierarchy;
@@ -173,7 +183,7 @@ After the user approves this single style sample, batch-generate all SVG diagram
 
 Use SVG for complex diagrams and visual review, not as an excuse to flatten the whole presentation. In the final PPT, keep normal text and simple shapes native; embed SVG only for complex vector relationships whose editability tradeoff is acceptable.
 
-Read [references/svg-and-layout.md](references/svg-and-layout.md) before creating the style sample or final diagrams.
+Read [references/svg-and-layout.md](references/svg-and-layout.md) and the installed `svg-diagram-engine` instructions before creating the style sample or final diagrams. Validate every SVG and render it to PNG for visual review before inserting it into PowerPoint.
 
 ## Explain necessary terminology in place
 

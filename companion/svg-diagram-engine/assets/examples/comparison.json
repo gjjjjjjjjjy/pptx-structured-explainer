@@ -1,0 +1,18 @@
+{
+  "type": "comparison",
+  "title": "Cache 与 No Cache 推理对照",
+  "subtitle": "先验证输出一致，再比较 TPOT 与显存",
+  "canvas": {"width": 1600, "height": 900},
+  "columns": [
+    {
+      "title": "No Cache",
+      "tone": "orange",
+      "items": ["每一步输入完整历史序列", "重复计算历史 Token 的 K / V", "序列增长后计算量持续增加"]
+    },
+    {
+      "title": "KV Cache",
+      "tone": "green",
+      "items": ["每一步只输入当前 Token", "读取并追加已经缓存的 K / V", "以缓存空间换取 Decode 速度"]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "matrix",
+  "title": "Causal Mask 的下三角可见性",
+  "subtitle": "Query 只能读取当前位置及其之前的 Key",
+  "canvas": {"width": 1600, "height": 900},
+  "row_labels": ["Q1", "Q2", "Q3", "Q4"],
+  "column_labels": ["K1", "K2", "K3", "K4"],
+  "values": [[0, -1, -1, -1], [0, 0, -1, -1], [0, 0, 0, -1], [0, 0, 0, 0]],
+  "value_labels": {"0": "可见", "-1": "屏蔽"},
+  "note_title": "矩阵含义",
+  "notes": ["绿色：保留 Attention Score", "红色：Softmax 前加入负大值", "下三角：阻止读取未来 Token"]
+}

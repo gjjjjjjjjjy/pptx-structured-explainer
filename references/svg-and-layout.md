@@ -34,6 +34,14 @@ The sample must establish:
 
 Obtain approval of this one unified style. Do not request page-by-page SVG approval afterward.
 
+Choose one of three production modes before creating the sample:
+
+- **Structured:** a constrained JSON specification rendered by the SVG engine; preferred for weak models and repeated layouts.
+- **Custom:** hand-authored static SVG; preferred for capable models and knowledge-specific mechanism drawings.
+- **Hybrid:** structured geometry with a small, clearly separated custom overlay.
+
+All modes must pass the same portability validator and PNG visual review. A stronger model may increase composition quality, information density, and visual nuance, but it may not relax semantic labeling, minimum text size, safe margins, or embedded-asset rules.
+
 ## SVG semantic rules
 
 Select the visual form from the relationship:

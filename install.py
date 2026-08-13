@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the explainer and PPT operator skills together for Claude Code or Codex."""
+"""Install the explainer, PPT operator, and SVG diagram skills as one bundle."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent
 EXPLAINER_FILES = ("SKILL.md", "agents", "references", "scripts", "LICENSE")
-OPERATOR_SOURCE = REPO_ROOT / "companion" / "pptx-operator"
+COMPANION_NAMES = ("pptx-operator", "svg-diagram-engine")
 REQUIREMENTS = REPO_ROOT / "requirements.txt"
 
 
@@ -36,32 +36,42 @@ def copy_item(source: Path, destination: Path) -> None:
         shutil.copy2(source, destination)
 
 
-def prepare_destination(destination: Path, force: bool, dry_run: bool) -> Path | None:
+def prepare_destination(
+    destination: Path, backup_directory: Path, force: bool, dry_run: bool
+) -> Path | None:
     if not destination.exists():
         return None
     if not force:
         raise FileExistsError(
             f"destination already exists: {destination}; rerun with --force to replace it safely"
         )
-    suffix = datetime.now().strftime("%Y%m%d-%H%M%S")
-    backup = destination.with_name(f"{destination.name}.backup-{suffix}")
+    backup = backup_directory / destination.name
     if not dry_run:
+        backup_directory.mkdir(parents=True, exist_ok=True)
         destination.rename(backup)
     return backup
 
 
-def install_pair(skills_dir: Path, force: bool, dry_run: bool) -> None:
+def install_bundle(skills_dir: Path, force: bool, dry_run: bool) -> None:
     explainer_destination = skills_dir / "pptx-structured-explainer"
-    operator_destination = skills_dir / "pptx-operator"
+    companion_destinations = [skills_dir / name for name in COMPANION_NAMES]
+    suffix = datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup_directory = skills_dir.parent / f"{skills_dir.name}-backups" / suffix
     backups = []
-    for destination in (explainer_destination, operator_destination):
-        backup = prepare_destination(destination, force=force, dry_run=dry_run)
+    for destination in (explainer_destination, *companion_destinations):
+        backup = prepare_destination(
+            destination,
+            backup_directory=backup_directory,
+            force=force,
+            dry_run=dry_run,
+        )
         if backup:
             backups.append(backup)
 
     print(f"skills_dir={skills_dir}")
     print(f"install={explainer_destination}")
-    print(f"install={operator_destination}")
+    for destination in companion_destinations:
+        print(f"install={destination}")
     for backup in backups:
         print(f"backup={backup}")
     if dry_run:
@@ -71,12 +81,13 @@ def install_pair(skills_dir: Path, force: bool, dry_run: bool) -> None:
     explainer_destination.mkdir(parents=True, exist_ok=True)
     for relative in EXPLAINER_FILES:
         copy_item(REPO_ROOT / relative, explainer_destination / relative)
-    shutil.copytree(
-        OPERATOR_SOURCE,
-        operator_destination,
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
-    )
-    shutil.copy2(REPO_ROOT / "LICENSE", operator_destination / "LICENSE")
+    for name, destination in zip(COMPANION_NAMES, companion_destinations):
+        shutil.copytree(
+            REPO_ROOT / "companion" / name,
+            destination,
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
+        )
+        shutil.copy2(REPO_ROOT / "LICENSE", destination / "LICENSE")
 
 
 def install_dependencies() -> None:
@@ -125,7 +136,7 @@ def main() -> None:
         if args.install_deps and not args.dry_run:
             install_dependencies()
         for skills_dir in dict.fromkeys(targets):
-            install_pair(skills_dir, force=args.force, dry_run=args.dry_run)
+            install_bundle(skills_dir, force=args.force, dry_run=args.dry_run)
     except (OSError, FileExistsError, subprocess.CalledProcessError) as exc:
         print(f"INSTALL FAILED: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc

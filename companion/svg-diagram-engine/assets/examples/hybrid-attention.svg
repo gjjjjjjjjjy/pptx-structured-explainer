@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+  <title>Hybrid模式的Attention计算示意图</title>
+  <desc>以稳定流程底图组织计算步骤，在Mask节点内增加定制矩阵和公式层。</desc>
+  <defs>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EFF6FF"/><stop offset="1" stop-color="#F6F0FF"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#172033" flood-opacity="0.09"/></filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#2F7FF7"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#F7F9FC"/>
+  <rect width="1600" height="144" fill="url(#header)"/>
+  <rect x="72" y="48" width="10" height="60" rx="5" fill="#15936F"/>
+  <text x="104" y="80" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="39" font-weight="700" fill="#172033">Hybrid：稳定流程底图 + Attention 机制精绘层</text>
+  <text x="104" y="118" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="21" fill="#667085">通用步骤由固定布局保持一致；Mask 的数值语义在局部自定义展开</text>
+  <rect x="1298" y="48" width="230" height="50" rx="25" fill="#172033"/>
+  <text x="1413" y="80" text-anchor="middle" font-family="Arial, PingFang SC, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">HYBRID MODE</text>
+
+  <text x="72" y="194" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#1D5FC4">结构化底图：固定节点、间距和连接顺序</text>
+  <path d="M72 211H1528" stroke="#B7CDF0" stroke-width="2" stroke-dasharray="8 8"/>
+
+  <rect x="70" y="256" width="230" height="152" rx="22" fill="#FFFFFF" stroke="#8DB8FA" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="104" cy="290" r="18" fill="#2F7FF7"/><text x="104" y="297" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="132" y="296" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#172033">Input X</text>
+  <text x="94" y="338" font-family="PingFang SC, sans-serif" font-size="18" fill="#475467">输入 Token 表示</text>
+  <rect x="94" y="358" width="182" height="28" rx="14" fill="#EAF2FF"/>
+  <text x="185" y="378" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#1D5FC4">[batch, seq, dim]</text>
+
+  <path d="M300 332H356" stroke="#2F7FF7" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="370" y="256" width="250" height="152" rx="22" fill="#FFFFFF" stroke="#8DB8FA" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="404" cy="290" r="18" fill="#2F7FF7"/><text x="404" y="297" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">2</text>
+  <text x="432" y="296" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#172033">Q / K / V</text>
+  <text x="394" y="338" font-family="PingFang SC, sans-serif" font-size="18" fill="#475467">三组线性投影</text>
+  <text x="394" y="374" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#1D5FC4">Q=XWQ  K=XWK  V=XWV</text>
+
+  <path d="M620 332H676" stroke="#2F7FF7" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="690" y="256" width="250" height="152" rx="22" fill="#FFFFFF" stroke="#8DB8FA" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="724" cy="290" r="18" fill="#2F7FF7"/><text x="724" y="297" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">3</text>
+  <text x="752" y="296" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#172033">Score</text>
+  <text x="714" y="338" font-family="PingFang SC, sans-serif" font-size="18" fill="#475467">计算相关性分数</text>
+  <text x="714" y="374" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#1D5FC4">QKᵀ / √d</text>
+
+  <path d="M940 332H996" stroke="#2F7FF7" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="1010" y="256" width="250" height="152" rx="22" fill="#FFFFFF" stroke="#B68ADC" stroke-width="3" filter="url(#shadow)"/>
+  <circle cx="1044" cy="290" r="18" fill="#6A1B9A"/><text x="1044" y="297" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">4</text>
+  <text x="1072" y="296" font-family="Arial, PingFang SC, sans-serif" font-size="23" font-weight="700" fill="#172033">Mask + Softmax</text>
+  <text x="1034" y="338" font-family="PingFang SC, sans-serif" font-size="18" fill="#475467">限制可见范围并归一化</text>
+  <rect x="1034" y="356" width="202" height="28" rx="14" fill="#F7F0FF"/>
+  <text x="1135" y="376" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="16" font-weight="700" fill="#6A1B9A">局部机制层在下方展开</text>
+
+  <path d="M1260 332H1316" stroke="#2F7FF7" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="1330" y="256" width="200" height="152" rx="22" fill="#FFFFFF" stroke="#8DB8FA" stroke-width="2" filter="url(#shadow)"/>
+  <circle cx="1364" cy="290" r="18" fill="#2F7FF7"/><text x="1364" y="297" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">5</text>
+  <text x="1392" y="296" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#172033">Output</text>
+  <text x="1354" y="338" font-family="PingFang SC, sans-serif" font-size="18" fill="#475467">加权汇总 Value</text>
+  <text x="1354" y="374" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#1D5FC4">A × V</text>
+
+  <path d="M1135 408V456" stroke="#6A1B9A" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="434" y="468" width="1096" height="332" rx="26" fill="#FFFFFF" stroke="#C9B8E6" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="456" y="490" width="242" height="42" rx="21" fill="#6A1B9A"/>
+  <text x="577" y="518" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">自定义机制层：Causal Mask</text>
+  <text x="456" y="572" font-family="PingFang SC, sans-serif" font-size="20" font-weight="700" fill="#172033">示例：第 3 个 Query 只能读取 K₁～K₃</text>
+  <text x="456" y="607" font-family="PingFang SC, sans-serif" font-size="18" fill="#667085">绿色 0：保留 Score　红色 −∞：Softmax 后权重趋近 0</text>
+
+  <text x="515" y="655" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">K₁</text>
+  <text x="581" y="655" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">K₂</text>
+  <text x="647" y="655" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">K₃</text>
+  <text x="713" y="655" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">K₄</text>
+  <text x="460" y="694" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#1D5FC4">Q₃</text>
+  <g font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="middle">
+    <rect x="486" y="668" width="58" height="52" rx="10" fill="#DDF5EC"/><text x="515" y="701" fill="#116B54">0</text>
+    <rect x="552" y="668" width="58" height="52" rx="10" fill="#DDF5EC"/><text x="581" y="701" fill="#116B54">0</text>
+    <rect x="618" y="668" width="58" height="52" rx="10" fill="#DDF5EC"/><text x="647" y="701" fill="#116B54">0</text>
+    <rect x="684" y="668" width="58" height="52" rx="10" fill="#FCE8EE"/><text x="713" y="701" fill="#B4235A">−∞</text>
+  </g>
+  <path d="M770 694H848" stroke="#94A3B8" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="862" y="636" width="286" height="116" rx="18" fill="#F7F0FF" stroke="#D7C5EE"/>
+  <text x="886" y="673" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#6A1B9A">加入 Mask</text>
+  <text x="886" y="706" font-family="Arial, sans-serif" font-size="18" fill="#172033">S₃ + [0, 0, 0, −∞]</text>
+  <text x="886" y="735" font-family="PingFang SC, sans-serif" font-size="17" fill="#667085">未来位置被屏蔽</text>
+  <path d="M1148 694H1218" stroke="#94A3B8" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="1232" y="636" width="268" height="116" rx="18" fill="#EAF2FF" stroke="#A9C9FB"/>
+  <text x="1256" y="673" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#1D5FC4">Softmax</text>
+  <text x="1256" y="706" font-family="Arial, sans-serif" font-size="18" fill="#172033">[α₁, α₂, α₃, 0]</text>
+  <text x="1256" y="735" font-family="PingFang SC, sans-serif" font-size="17" fill="#667085">得到注意力权重</text>
+
+  <rect x="70" y="468" width="326" height="332" rx="24" fill="#172033"/>
+  <text x="98" y="512" font-family="PingFang SC, sans-serif" font-size="21" font-weight="700" fill="#FFFFFF">为什么用 Hybrid？</text>
+  <circle cx="104" cy="558" r="7" fill="#4D9AFF"/><text x="124" y="565" font-family="PingFang SC, sans-serif" font-size="18" fill="#E2E8F0">流程节点可批量保持一致</text>
+  <circle cx="104" cy="608" r="7" fill="#A56CD6"/><text x="124" y="615" font-family="PingFang SC, sans-serif" font-size="18" fill="#E2E8F0">复杂 Mask 只在局部精绘</text>
+  <circle cx="104" cy="658" r="7" fill="#39B894"/><text x="124" y="665" font-family="PingFang SC, sans-serif" font-size="18" fill="#E2E8F0">修改步骤不必重画机制层</text>
+  <rect x="94" y="706" width="278" height="64" rx="16" fill="#263449"/>
+  <text x="233" y="733" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="17" font-weight="700" fill="#FFFFFF">稳定性与表达力之间的折中</text>
+  <text x="233" y="758" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="16" fill="#CBD5E1">底图固定，增强层有明确边界</text>
+
+  <text x="72" y="850" font-family="PingFang SC, sans-serif" font-size="18" font-weight="700" fill="#15936F">验收：</text>
+  <text x="134" y="850" font-family="PingFang SC, sans-serif" font-size="18" fill="#475467">流程顺序清晰、Mask 数值含义明确、增强层不遮挡底图、SVG 严格校验通过</text>
+</svg>

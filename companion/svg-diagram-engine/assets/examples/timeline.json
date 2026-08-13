@@ -1,0 +1,13 @@
+{
+  "type": "timeline",
+  "title": "一次生成请求的性能时间线",
+  "subtitle": "TTFT 描述首 Token 等待，TPOT 描述后续生成节奏",
+  "canvas": {"width": 1600, "height": 900},
+  "events": [
+    {"title": "请求进入", "description": "Prompt 完成分词"},
+    {"title": "Prefill", "description": "处理完整 Prompt"},
+    {"title": "首 Token", "description": "TTFT 在此结束"},
+    {"title": "连续 Decode", "description": "每步记录 TPOT"},
+    {"title": "生成结束", "description": "得到 E2E 延迟"}
+  ]
+}
