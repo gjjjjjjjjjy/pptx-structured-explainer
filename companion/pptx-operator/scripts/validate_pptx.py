@@ -12,8 +12,65 @@ from defusedxml import ElementTree as ET
 
 
 REL_NS = "http://schemas.openxmlformats.org/package/2006/relationships"
+A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 P_NS = "http://schemas.openxmlformats.org/presentationml/2006/main"
 R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+
+
+def local_name(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]
+
+
+def object_label(parent_map, transform) -> str:
+    current = transform
+    while current in parent_map:
+        current = parent_map[current]
+        kind = local_name(current.tag)
+        if kind not in {"cxnSp", "sp", "pic", "graphicFrame", "grpSp"}:
+            continue
+        object_id = None
+        object_name = None
+        for element in current.iter():
+            if local_name(element.tag) == "cNvPr":
+                object_id = element.get("id")
+                object_name = element.get("name")
+                break
+        details = [f"kind={'connector' if kind == 'cxnSp' else kind}"]
+        if object_id:
+            details.append(f"id={object_id}")
+        if object_name:
+            details.append(f"name={object_name!r}")
+        return " ".join(details)
+    return "kind=unknown"
+
+
+def validate_transform_extents(part_name: str, root) -> list[str]:
+    """Reject geometry PowerPoint repairs even when the XML is otherwise valid."""
+    errors = []
+    parent_map = {child: parent for parent in root.iter() for child in parent}
+    for transform in root.findall(f".//{{{A_NS}}}xfrm"):
+        label = object_label(parent_map, transform)
+        for element_name in ("ext", "chExt"):
+            extent = transform.find(f"{{{A_NS}}}{element_name}")
+            if extent is None:
+                continue
+            for axis in ("cx", "cy"):
+                raw = extent.get(axis)
+                if raw is None:
+                    continue
+                try:
+                    value = int(raw)
+                except ValueError:
+                    errors.append(
+                        f"invalid transform extent: {part_name} {label} {element_name}.{axis}={raw!r}"
+                    )
+                    continue
+                if value < 0:
+                    errors.append(
+                        f"negative transform extent: {part_name} {label} {element_name}.{axis}={value}; "
+                        "PowerPoint may repair or discard this object"
+                    )
+    return errors
 
 
 def normalize_target(rel_path: str, target: str) -> str:
@@ -66,6 +123,16 @@ def main() -> None:
                 if resolved not in names:
                     errors.append(f"missing target: {name} -> {target} ({resolved})")
 
+        for name in sorted(
+            n for n in names if n.startswith("ppt/") and n.endswith(".xml")
+        ):
+            try:
+                root = ET.fromstring(zf.read(name))
+            except Exception as exc:
+                errors.append(f"invalid presentation XML {name}: {exc}")
+                continue
+            errors.extend(validate_transform_extents(name, root))
+
         slide_count = 0
         if "ppt/presentation.xml" in names and "ppt/_rels/presentation.xml.rels" in names:
             try:
@@ -101,4 +168,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

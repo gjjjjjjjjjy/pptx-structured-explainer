@@ -42,13 +42,18 @@ on run argv
     end tell
 end run
 '''
-    subprocess.run(
+    result = subprocess.run(
         ["osascript", "-e", script, str(deck), str(pdf_path)],
-        check=True,
+        check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
     )
+    if result.returncode != 0:
+        detail = result.stdout.strip() or "no Microsoft PowerPoint automation diagnostic output"
+        raise RuntimeError(
+            f"Microsoft PowerPoint export failed with exit code {result.returncode}: {detail}"
+        )
 
 
 def export_with_libreoffice(deck: Path, pdf_path: Path, soffice: str) -> None:

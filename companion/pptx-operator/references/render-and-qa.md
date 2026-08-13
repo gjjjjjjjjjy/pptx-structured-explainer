@@ -26,6 +26,7 @@ Verify:
 - no linked image or external non-hyperlink media remains;
 - no absolute local path is embedded in XML or relationships.
 - every Han run has the renderer-visible CJK font in both `a:latin` and `a:ea`, and mixed Han/Latin text is split into separate runs when LibreOffice compatibility is required.
+- all DrawingML transform extents are non-negative; reverse-direction connectors use `flipH`/`flipV` rather than negative `cx` or `cy`.
 
 ## Visual checks
 

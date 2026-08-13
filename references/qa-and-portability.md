@@ -69,6 +69,7 @@ Require:
 - no `TargetMode="External"` media relationships;
 - no HTTP/HTTPS media targets or other web-hosted assets;
 - no absolute local paths such as `/Users/...`, `C:\...`, temporary directories, or workspace paths;
+- no negative DrawingML transform extents; reverse connectors use normalized bounds and `flipH`/`flipV`;
 - all referenced targets exist in the package;
 - GIF and other media are present under the package media directory.
 

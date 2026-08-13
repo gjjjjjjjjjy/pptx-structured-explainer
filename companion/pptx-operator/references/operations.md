@@ -22,6 +22,8 @@ Prefer native objects:
 - embedded SVG only for complex vector relationships;
 - bitmap images only for screenshots, photographs, textures, or animation frames.
 
+Native connector geometry must use non-negative `cx` and `cy` extents. When the end point lies left of or above the start point, normalize the bounding box and encode direction with `flipH` and/or `flipV`. Never write a negative connector width or height; PowerPoint may classify it as out of bounds and launch file repair.
+
 ## Existing-deck editing
 
 Render and inventory the source first. Establish the exact slide and element boundary before modifying anything. Work on a copy and keep one recovery copy.
@@ -34,7 +36,7 @@ Preserve paragraph and run formatting. Replace only the relevant run text when p
 
 Use real list paragraphs instead of literal bullet characters. Keep code in an editable monospaced text box. Leave sufficient width for font substitution and verify line wrapping after rendering.
 
-For Chinese native text, inspect the template font scheme and fonts visible to the target renderer before generation. For PowerPoint, set Latin and East Asian typefaces separately. For LibreOffice compatibility, split mixed-script text: Latin-only runs may use Arial, while Han runs must carry the chosen CJK font in both `a:latin` and `a:ea` plus `lang="zh-CN"`. Do not depend on font fallback or assume that a bundled renderer can see every system font.
+For Chinese native text, inspect the template font scheme and fonts visible to the target renderer before generation. On Windows, query both machine/user font registration and the Windows font directories; resolve localized family aliases such as `微软雅黑`/`Microsoft YaHei`, `等线`/`DengXian`, and `宋体`/`SimSun`. For PowerPoint, set Latin and East Asian typefaces separately. For LibreOffice compatibility, split mixed-script text: Latin-only runs may use Arial, while Han runs must carry the chosen CJK font in both `a:latin` and `a:ea` plus `lang="zh-CN"`. Do not depend on font fallback or assume that a bundled renderer can see every system font.
 
 ## Images and SVG
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import re
 import shutil
@@ -20,10 +21,30 @@ A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 THEME_TOKENS = {"+mj-ea", "+mn-ea", "+mj-lt", "+mn-lt", ""}
 CJK_PREFERENCES = {
     "Darwin": ["PingFang SC", "Hiragino Sans GB", "Heiti SC", "Noto Sans CJK SC", "Source Han Sans SC"],
-    "Windows": ["Microsoft YaHei", "DengXian", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC"],
+    "Windows": [
+        "Microsoft YaHei",
+        "DengXian",
+        "SimSun",
+        "SimHei",
+        "Noto Sans CJK SC",
+        "Source Han Sans SC",
+    ],
     "Linux": ["Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "WenQuanYi Micro Hei"],
 }
 LATIN_PREFERENCES = ["Arial", "Calibri", "Liberation Sans", "Noto Sans"]
+FONT_ALIASES = {
+    "microsoft yahei": ["微软雅黑", "Microsoft YaHei UI"],
+    "微软雅黑": ["Microsoft YaHei", "Microsoft YaHei UI"],
+    "dengxian": ["等线"],
+    "等线": ["DengXian"],
+    "simsun": ["宋体"],
+    "宋体": ["SimSun"],
+    "simhei": ["黑体"],
+    "黑体": ["SimHei"],
+    "pmingliu": ["新細明體", "新细明体"],
+    "新細明體": ["PMingLiU"],
+    "新细明体": ["PMingLiU"],
+}
 
 
 def clean_font_name(value: str | None) -> str:
@@ -32,6 +53,40 @@ def clean_font_name(value: str | None) -> str:
 
 def installed_font_families() -> tuple[dict[str, str], str]:
     families: dict[str, str] = {}
+    if sys.platform == "win32":
+        try:
+            import winreg
+
+            locations = (
+                (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"),
+                (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"),
+            )
+            for hive, key_path in locations:
+                try:
+                    key = winreg.OpenKey(hive, key_path)
+                except OSError:
+                    continue
+                with key:
+                    for index in range(winreg.QueryInfoKey(key)[1]):
+                        display_name = winreg.EnumValue(key, index)[0]
+                        name = re.sub(r"\s*\([^)]*\)\s*$", "", display_name).strip()
+                        for alias in (part.strip() for part in name.split("&")):
+                            if alias:
+                                families.setdefault(alias.casefold(), alias)
+        except OSError:
+            pass
+
+        windows_dir = Path(os.environ.get("WINDIR", r"C:\Windows"))
+        font_dirs = [windows_dir / "Fonts"]
+        local_app_data = os.environ.get("LOCALAPPDATA")
+        if local_app_data:
+            font_dirs.append(Path(local_app_data) / "Microsoft/Windows/Fonts")
+        for directory in font_dirs:
+            if directory.is_dir():
+                families.update(font_file_families(directory, require_han=False))
+        if families:
+            return families, "windows-registry-and-fonts"
+
     fc_list = shutil.which("fc-list")
     if fc_list:
         result = subprocess.run(
@@ -45,22 +100,6 @@ def installed_font_families() -> tuple[dict[str, str], str]:
                         families.setdefault(name.casefold(), name)
             if families:
                 return families, "fontconfig"
-
-    if sys.platform == "win32":
-        try:
-            import winreg
-
-            key_path = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
-            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path) as key:
-                for index in range(winreg.QueryInfoKey(key)[1]):
-                    display_name = winreg.EnumValue(key, index)[0]
-                    name = re.sub(r"\s*\([^)]*\)\s*$", "", display_name).strip()
-                    if name:
-                        families.setdefault(name.casefold(), name)
-        except OSError:
-            pass
-        if families:
-            return families, "windows-registry"
 
     font_directories = [
         Path("/System/Library/Fonts"),
@@ -132,6 +171,7 @@ def font_file_families(directory: Path, require_han: bool) -> dict[str, str]:
                     continue
                 names = font["name"]
                 for name_id in (16, 1):
+                    found_family = False
                     for record in names.names:
                         if record.nameID != name_id:
                             continue
@@ -141,7 +181,8 @@ def font_file_families(directory: Path, require_han: bool) -> dict[str, str]:
                             continue
                         if family:
                             families.setdefault(family.casefold(), family)
-                    if families:
+                            found_family = True
+                    if found_family:
                         break
         except Exception:
             continue
@@ -217,9 +258,11 @@ def template_font_candidates(template: Path | None) -> dict[str, list[str]]:
 
 def _pick(candidates: list[str], installed: dict[str, str]) -> tuple[str | None, str | None]:
     for candidate in candidates:
-        resolved = installed.get(candidate.casefold())
-        if resolved:
-            return resolved, candidate
+        alternatives = [candidate] + FONT_ALIASES.get(candidate.casefold(), [])
+        for alternative in alternatives:
+            resolved = installed.get(alternative.casefold())
+            if resolved:
+                return resolved, candidate
     return None, None
 
 

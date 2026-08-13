@@ -19,6 +19,7 @@
 - 按照由浅入深的知识依赖组织内容（概念先于机制、指标定义先于结果表、正确性先于性能）
 - 在专业术语首次出现时就近解释；缩写必须同时给出展开形式和释义
 - 根据模板、操作系统和目标渲染后端自动选择中文标题/正文字体，不把 Arial 当作中文字体
+- 检查并修复 PowerPoint 会触发文件修复的负宽度/负高度连接线几何
 - 先让用户选择 Structured、Hybrid、Custom 或逐图选择，再确认统一 SVG 风格并批量制作图示
 - 优先使用 PowerPoint 原生文字、形状、表格和图表，保持内容可编辑
 - 检查外部媒体链接、本地路径泄漏和缺失资源
@@ -121,6 +122,8 @@ python scripts/audit_media.py deck.pptx
 
 # 完整 PPT 操作工具位于配套 Skill
 python companion/pptx-operator/scripts/validate_pptx.py deck.pptx
+python companion/pptx-operator/scripts/normalize_connectors.py \
+  deck.pptx deck-geometry-fixed.pptx
 python companion/pptx-operator/scripts/font_policy.py \
   --template deck.pptx --renderer libreoffice
 python companion/pptx-operator/scripts/apply_cjk_fonts.py \
@@ -183,6 +186,7 @@ pptx-structured-explainer/
     │       ├── font_policy.py
     │       ├── apply_cjk_fonts.py
     │       ├── audit_pptx_fonts.py
+    │       ├── normalize_connectors.py
     │       ├── validate_pptx.py
     │       └── render_pptx.py
     └── svg-diagram-engine/

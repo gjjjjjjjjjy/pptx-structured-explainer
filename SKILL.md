@@ -20,6 +20,7 @@ Create presentations only after resolving the knowledge structure and obtaining 
 - Explain every non-decorative visual encoding in place. State what boxes, circles, cells, colors, lines, sizes, and shaded regions represent; never leave the audience to infer a symbol's semantic meaning.
 - Keep titles, ordinary text, tables, charts, shapes, and simple diagrams editable in PowerPoint. Never deliver whole-slide raster images as editable slides.
 - For Chinese native text, inspect the supplied template and fonts visible to the target renderer. Keep Arial only for Latin-only runs. For LibreOffice, split mixed-script runs and assign a renderer-visible CJK font explicitly to Han runs; never rely on fallback.
+- Require non-negative native transform extents. Reverse-direction connectors must use normalized bounds plus `flipH`/`flipV`; a negative connector width or height can trigger PowerPoint file repair.
 - Embed every SVG, image, screenshot, audio, video, and GIF inside the `.pptx` package. Never use linked-media relationships, local file paths, or web URLs as media sources in the delivered deck; the presentation must remain complete after being copied to another computer.
 - Preserve a user's confirmed diagrams, template, brand elements, notes, animations, and unaffected slides unless the user explicitly authorizes replacement.
 - Do not expose hidden chain-of-thought. Present only the concise knowledge structure, dependencies, rationale, and decisions needed for user review.

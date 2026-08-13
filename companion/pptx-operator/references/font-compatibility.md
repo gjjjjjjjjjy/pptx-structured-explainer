@@ -10,12 +10,14 @@
 Preferred system candidates:
 
 - macOS: `PingFang SC`, `Hiragino Sans GB`, `Heiti SC`;
-- Windows: `Microsoft YaHei`, `DengXian`, `SimHei`;
+- Windows: `Microsoft YaHei`, `DengXian`, `SimSun`, `SimHei`;
 - Linux/LibreOffice: `Noto Sans CJK SC`, `Noto Sans SC`, `Source Han Sans SC`, `WenQuanYi Micro Hei`.
 
 Use the template's major East Asian font for titles and minor East Asian font for body text when both are renderer-visible. Keep Arial, Calibri, or another approved Latin font only for Latin-only runs.
 
 “Installed on the operating system” and “visible to the renderer” are not always equivalent. A self-contained LibreOffice runtime may use only its private font directory. The policy command therefore accepts `--renderer system|powerpoint|libreoffice` and stops when the chosen backend cannot see a CJK font.
+
+On Windows, inspect both HKLM/HKCU font registrations and the system/user font directories. Treat localized and English family names as aliases: `微软雅黑` ↔ `Microsoft YaHei`, `等线` ↔ `DengXian`, `宋体` ↔ `SimSun`, and `黑体` ↔ `SimHei`. This lets a Chinese template theme match the same installed font regardless of the Windows display language.
 
 ## Native PowerPoint requirement
 
