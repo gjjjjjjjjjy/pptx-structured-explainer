@@ -10,8 +10,8 @@ jobs:
   windows-harness:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install Python dependencies
@@ -24,4 +24,14 @@ jobs:
       - name: Diagnose rendering backends
         run: python .\companion\pptx-operator\scripts\render_pptx.py --diagnose
       - name: Run deterministic harness
-        run: python .\tests\run_harness.py
+        shell: pwsh
+        run: |
+          $output = & python .\tests\run_harness.py 2>&1
+          $exitCode = $LASTEXITCODE
+          $output | ForEach-Object { Write-Host $_ }
+          if ($exitCode -ne 0) {
+            $message = ($output | Select-Object -Last 80) -join "`n"
+            $message = $message.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Host "::error title=Windows harness failure::$message"
+            exit $exitCode
+          }
