@@ -10,6 +10,10 @@ from pathlib import Path
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 def walk_shapes(shapes):
     for shape in shapes:
@@ -111,4 +115,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

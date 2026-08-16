@@ -9,6 +9,10 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)

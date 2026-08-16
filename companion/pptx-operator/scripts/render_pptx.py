@@ -13,6 +13,10 @@ import time
 from functools import lru_cache
 from pathlib import Path
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 def find_soffice() -> str | None:
     program_files = [

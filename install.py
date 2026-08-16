@@ -24,6 +24,20 @@ BUNDLED_FONT_FILES = (
 )
 
 
+def configure_utf8_stdio() -> None:
+    """Keep Windows consoles and redirected logs from failing on Unicode paths."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            try:
+                reconfigure(encoding="utf-8", errors="backslashreplace")
+            except (AttributeError, ValueError):
+                pass
+
+
+configure_utf8_stdio()
+
+
 def default_codex_dir() -> Path:
     codex_root = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
     return codex_root / "skills"

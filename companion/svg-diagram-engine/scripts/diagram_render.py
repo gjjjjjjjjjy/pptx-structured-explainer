@@ -10,6 +10,10 @@ import unicodedata
 from html import escape
 from pathlib import Path
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_THEME = SKILL_DIR / "assets" / "themes" / "metax-light.json"

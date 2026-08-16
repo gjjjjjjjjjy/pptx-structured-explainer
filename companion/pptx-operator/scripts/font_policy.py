@@ -16,8 +16,11 @@ from pathlib import Path
 
 from defusedxml import ElementTree as ET
 
+from cli_compat import configure_utf8_stdio
 from font_licenses import approved_candidates
 
+
+configure_utf8_stdio()
 
 A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 THEME_TOKENS = {"+mj-ea", "+mn-ea", "+mj-lt", "+mn-lt", ""}

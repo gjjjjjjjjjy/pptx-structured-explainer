@@ -35,6 +35,8 @@ On Windows, `auto` prefers registered desktop PowerPoint and uses PowerShell COM
 
 The PowerPoint backend creates a UTF-8-BOM temporary `.ps1` script so Chinese input and output paths work under Windows PowerShell 5.1. The script opens the deck read-only, exports PDF using `ppSaveAsPDF`, closes the presentation, releases COM objects, and quits PowerPoint.
 
+All bundled Python command-line entry points explicitly configure UTF-8 output. Chinese slide text, filenames, and audit findings therefore remain printable in Windows PowerShell, redirected log files, and CI environments whose legacy locale would otherwise default to `cp1252`.
+
 PowerPoint COM requires an interactive desktop user session. Do not run the PowerPoint backend as a Windows service, in Session 0, or under a user account without an initialized Office profile. Use LibreOffice for unattended service execution.
 
 ## Font and portability checks

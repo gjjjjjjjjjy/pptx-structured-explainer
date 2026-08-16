@@ -12,6 +12,10 @@ from pathlib import Path
 
 from defusedxml import ElementTree as ET
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 SVG_NS = "http://www.w3.org/2000/svg"
 XLINK_NS = "http://www.w3.org/1999/xlink"

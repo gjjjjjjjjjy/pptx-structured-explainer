@@ -10,6 +10,10 @@ from pathlib import Path
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 def walk_shapes(shapes):
     """Yield top-level shapes and every shape nested inside a group."""

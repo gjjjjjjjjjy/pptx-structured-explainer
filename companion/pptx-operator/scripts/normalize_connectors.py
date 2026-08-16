@@ -11,6 +11,10 @@ from pathlib import Path
 
 from defusedxml import minidom
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 SLIDE_PART = re.compile(r"ppt/(?:slides|slideLayouts|slideMasters)/[^/]+\.xml")
 

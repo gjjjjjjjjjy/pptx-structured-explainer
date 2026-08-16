@@ -11,8 +11,11 @@ from pathlib import Path
 
 from defusedxml import minidom
 
+from cli_compat import configure_utf8_stdio
 from font_policy import recommend_fonts, renderer_font_families
 
+
+configure_utf8_stdio()
 
 HAN_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 LATIN_RE = re.compile(r"[A-Za-z0-9]")

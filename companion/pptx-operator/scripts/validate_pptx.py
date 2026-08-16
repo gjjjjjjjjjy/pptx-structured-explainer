@@ -10,6 +10,10 @@ from pathlib import Path, PurePosixPath
 
 from defusedxml import ElementTree as ET
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 REL_NS = "http://schemas.openxmlformats.org/package/2006/relationships"
 A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"

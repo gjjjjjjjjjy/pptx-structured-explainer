@@ -49,12 +49,28 @@ ARTIFACT_ROOT: Path
 RENDER_BACKEND = "none"
 
 
+def configure_utf8_stdio() -> None:
+    """Make Windows test output deterministic for Chinese paths and slide text."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            try:
+                reconfigure(encoding="utf-8", errors="backslashreplace")
+            except (AttributeError, ValueError):
+                pass
+
+
+configure_utf8_stdio()
+
+
 def run_python(script: Path, *arguments: object) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(script), *(str(argument) for argument in arguments)],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         check=False,
     )
 

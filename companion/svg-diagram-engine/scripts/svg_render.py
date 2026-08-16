@@ -12,6 +12,10 @@ import tempfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
+from cli_compat import configure_utf8_stdio
+
+
+configure_utf8_stdio()
 
 CODEX_NODE = Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
 CODEX_NODE_MODULES = Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules"

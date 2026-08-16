@@ -12,9 +12,12 @@ from pathlib import Path
 
 from defusedxml import ElementTree as ET
 
+from cli_compat import configure_utf8_stdio
 from font_licenses import APPROVED_FONT_LICENSES, is_approved_font, license_record
 from font_policy import A_NS
 
+
+configure_utf8_stdio()
 
 HAN_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 LATIN_RE = re.compile(r"[A-Za-z0-9]")
