@@ -13,6 +13,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 from defusedxml import minidom
 from PIL import Image, ImageDraw
@@ -494,6 +495,85 @@ class SkillHarness(unittest.TestCase):
         )
         self.assertIn("no verified commercial-use and redistribution license", failure)
         self.assert_success(run_python(SVG_SCRIPTS / "svg_validate.py", approved, "--strict"))
+
+    def test_11_windows_powerpoint_com_export_contract(self) -> None:
+        sys.path.insert(0, str(PPTX_SCRIPTS))
+        try:
+            import render_pptx
+
+            deck = self.root / "Windows 中文路径.pptx"
+            pdf = self.root / "Windows 中文路径.pdf"
+            deck.write_bytes(b"pptx-fixture")
+
+            def fake_run(command, **kwargs):
+                self.assertIn("-File", command)
+                script_path = Path(command[command.index("-File") + 1])
+                script_bytes = script_path.read_bytes()
+                self.assertTrue(script_bytes.startswith(b"\xef\xbb\xbf"))
+                script = script_bytes.decode("utf-8-sig")
+                self.assertIn("New-Object -ComObject PowerPoint.Application", script)
+                self.assertIn("$presentation.SaveAs($OutputPath, 32)", script)
+                self.assertIn("$powerPoint.Quit()", script)
+                output = Path(command[command.index("-OutputPath") + 1])
+                output.write_bytes(b"%PDF-1.7\n")
+                return subprocess.CompletedProcess(command, 0, stdout="")
+
+            with mock.patch.object(render_pptx.subprocess, "run", side_effect=fake_run):
+                render_pptx.export_with_powerpoint_windows(
+                    deck, pdf, powershell="powershell.exe"
+                )
+            self.assertTrue(pdf.is_file())
+
+            render_pptx.has_powerpoint.cache_clear()
+            with (
+                mock.patch.object(render_pptx.sys, "platform", "win32"),
+                mock.patch.object(render_pptx, "find_powershell", return_value="powershell.exe"),
+                mock.patch.object(
+                    render_pptx.subprocess,
+                    "run",
+                    return_value=subprocess.CompletedProcess([], 0),
+                ),
+            ):
+                self.assertTrue(render_pptx.has_powerpoint())
+            render_pptx.has_powerpoint.cache_clear()
+        finally:
+            sys.path.pop(0)
+
+    def test_12_windows_powerpoint_svg_export_contract(self) -> None:
+        sys.path.insert(0, str(SVG_SCRIPTS))
+        try:
+            import svg_render
+
+            source = self.root / "Windows SVG 中文.svg"
+            output = self.root / "Windows SVG 中文.png"
+            source.write_text(
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200"/>',
+                encoding="utf-8",
+            )
+
+            def fake_run(command, **kwargs):
+                script_path = Path(command[command.index("-File") + 1])
+                script_bytes = script_path.read_bytes()
+                self.assertTrue(script_bytes.startswith(b"\xef\xbb\xbf"))
+                script = script_bytes.decode("utf-8-sig")
+                self.assertIn("$slide.Shapes.AddPicture", script)
+                self.assertIn('$slide.Export($OutputPath, "PNG"', script)
+                destination = Path(command[command.index("-OutputPath") + 1])
+                destination.write_bytes(b"\x89PNG\r\n\x1a\n")
+                return subprocess.CompletedProcess(command, 0, stdout="")
+
+            with mock.patch.object(svg_render.subprocess, "run", side_effect=fake_run):
+                svg_render.render_with_windows_powerpoint(
+                    source,
+                    output,
+                    400,
+                    200,
+                    1.5,
+                    powershell="powershell.exe",
+                )
+            self.assertTrue(output.is_file())
+        finally:
+            sys.path.pop(0)
 
 
 def main() -> None:

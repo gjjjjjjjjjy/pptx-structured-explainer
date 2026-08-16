@@ -25,6 +25,7 @@
 - 先让用户选择 Structured、Hybrid、Custom 或逐图选择，再确认统一 SVG 风格并批量制作图示
 - 优先使用 PowerPoint 原生文字、形状、表格和图表，保持内容可编辑
 - 检查外部媒体链接、本地路径泄漏和缺失资源
+- 在 Windows 上安装/注册思源字体，通过 PowerShell COM 调用桌面 PowerPoint 导出 PDF/PNG，支持中文路径
 - 支持现有 PPT 的结构盘点、局部修改和可移植性验证
 - 一次安装内容设计、PPT 文件操作和 SVG 图示 Skill
 
@@ -55,8 +56,10 @@ python install.py --target both --dry-run
 
 | 平台 | 目录 |
 | --- | --- |
-| Claude Code | `~/.claude/skills/` |
-| Codex | `${CODEX_HOME:-~/.codex}/skills/` |
+| Claude Code（macOS/Linux） | `~/.claude/skills/` |
+| Claude Code（Windows） | `%USERPROFILE%\.claude\skills\` |
+| Codex（macOS/Linux） | `${CODEX_HOME:-~/.codex}/skills/` |
+| Codex（Windows） | `%CODEX_HOME%\skills\` 或 `%USERPROFILE%\.codex\skills\` |
 
 如果目标目录已经存在，安装器默认停止，避免静默覆盖。确认更新时使用 `--force`；旧版本会移动到 Skills 目录同级的 `skills-backups/<时间戳>/`，避免备份被 Codex 或 Claude Code 误识别为可用 Skill，然后再写入新版本。
 
@@ -65,6 +68,20 @@ python install.py --target both --dry-run
 `--install-fonts` 会把仓库内附带的 `Source Han Sans SC` Regular / Bold 安装到当前用户的字体目录。字体为 Adobe 官方未修改文件，使用 SIL Open Font License 1.1，原始版权声明和完整许可证保存在 `assets/fonts/source-han-sans-sc/`。若不希望安装字体，去掉该参数即可；字体文件仍会随 Skill 复制，但 PowerPoint 只会使用已安装或文档已嵌入的字体。
 
 安装后可以调用 `/pptx-structured-explainer` 或 `$pptx-structured-explainer` 进入内容设计流程；实际操作文件时会配合 `pptx-operator`，复杂图示会配合 `svg-diagram-engine`。也可以直接描述任务，由 `description` 自动匹配。
+
+### Windows PowerShell
+
+Windows 请使用原生 Windows Python（不要在 WSL 中运行 PowerPoint COM 流程）：
+
+```powershell
+git clone https://github.com/gjjjjjjjjjy/pptx-structured-explainer.git
+Set-Location .\pptx-structured-explainer
+python .\install.py --target both --install-deps --install-fonts
+python .\companion\pptx-operator\scripts\render_pptx.py --diagnose
+python .\tests\run_harness.py
+```
+
+Windows 多行命令使用 PowerShell 反引号 `` ` `` 续行，不使用 Bash 的 `\`。完整的 Windows 安装、字体、渲染、SVG 与回归测试命令见 `companion/pptx-operator/references/windows.md`。
 
 ## 使用方式
 
@@ -105,14 +122,14 @@ python install.py --target both --dry-run
 | `inventory_pptx.py` | `python-pptx` |
 | `audit_media.py` | `defusedxml` |
 | 中文字体策略与渲染器字体检查 | `fontTools` |
-| 自动渲染预览 | macOS 优先使用 Microsoft PowerPoint，否则使用 LibreOffice；PNG 转换使用 Poppler 或 PyMuPDF |
+| 自动渲染预览 | macOS/Windows 优先使用 Microsoft PowerPoint，否则使用 LibreOffice；PNG 转换使用 Poppler 或 PyMuPDF |
 | 最终兼容性检查 | Microsoft PowerPoint（可用时） |
 
 ```bash
 pip install python-pptx defusedxml Pillow PyMuPDF fontTools
 ```
 
-`pptx-operator` 的自动渲染入口先生成 PDF，再转成逐页 PNG 和联系表。macOS 检测到 Microsoft PowerPoint 时优先使用它，否则回退到 LibreOffice。中文排版、GIF、SVG、动画和音视频在 LibreOffice 中可能与 PowerPoint 不完全一致，因此包含这些能力时仍应使用 Microsoft PowerPoint 做最终检查。
+`pptx-operator` 的自动渲染入口先生成 PDF，再转成逐页 PNG 和联系表。macOS 通过 AppleScript、Windows 通过 PowerShell COM 自动调用桌面 PowerPoint；不可用时回退到 LibreOffice。Windows COM 需要交互式桌面会话，Windows 服务或 Session 0 应使用 LibreOffice。中文排版、GIF、SVG、动画和音视频在 LibreOffice 中可能与 PowerPoint 不完全一致，因此包含这些能力时仍应使用 Microsoft PowerPoint 做最终检查。
 
 ## 辅助脚本
 
@@ -159,6 +176,8 @@ python tests/run_harness.py --render-backend libreoffice
 
 需要保留生成的 PPTX、SVG、PNG 和渲染结果时，增加 `--artifacts-dir ./harness-artifacts`。harness 会新建独立子目录，不覆盖已有文件。当前用例覆盖中文字体 run 修复、PPTX/SVG 未知字体许可拦截与思源替换、Windows 字体中英文别名、负连接线检测与归一化、Structured SVG、SVG 内部 base64 位图、PPTX 包内 SVG/PNG、外部关系和 SVG 内部外链拦截、删除源素材后的移动目录校验。
 
+仓库的 `.github/workflows/windows-harness.yml` 会在 `windows-latest` 上安装思源字体、Sharp 和 Python 依赖，再运行非 Office 回归。真实 PowerPoint COM 端到端测试使用 `python .\tests\run_harness.py --render-backend powerpoint`，需要安装桌面 PowerPoint 的 Windows 机器。
+
 `audit_media.py` 通过时打印 `PASS`，发现问题时打印 `FAIL` 并以非零状态退出，可直接用于 CI 或提交前检查。
 
 SVG 图示可独立运行：
@@ -175,7 +194,7 @@ python companion/svg-diagram-engine/scripts/svg_render.py task-tree.svg task-tre
 
 仓库同时提供绘图模式选择图以及 Structured、Hybrid、Custom 三种样张，位于 `companion/svg-diagram-engine/assets/examples/`。Skill 可以先展示选择图，再由用户决定整套统一模式或逐图选择。
 
-PNG 预览不启动浏览器，依次尝试 `resvg`、`rsvg-convert`、Sharp 和 CairoSVG；找到第一个可用后端即使用。Codex 可直接发现其运行时内置的 Sharp，Claude Code 也可使用当前项目或 `NODE_PATH` 中的 Sharp。SVG 源文件始终保留为最终矢量资产。
+PNG 预览不启动浏览器，依次尝试 `resvg`、`rsvg-convert`、Sharp、Windows 桌面 PowerPoint 和 CairoSVG；找到第一个可用后端即使用。Codex 可直接发现其运行时内置的 Sharp，Claude Code 也可使用当前项目或 `NODE_PATH` 中的 Sharp。SVG 源文件始终保留为最终矢量资产。
 
 若 Claude Code 环境没有上述后端，可在项目中执行 `npm install sharp`，然后用 `--backend sharp` 固定渲染后端；这条路径不依赖 Chrome、Chromium 或浏览器自动化。
 
@@ -183,6 +202,8 @@ PNG 预览不启动浏览器，依次尝试 `resvg`、`rsvg-convert`、Sharp 和
 
 ```text
 pptx-structured-explainer/
+├── .github/workflows/
+│   └── windows-harness.yml         # Windows 字体安装与非 Office 回归
 ├── install.py                      # 同时安装三个 Skills
 ├── requirements.txt               # PPT 操作脚本的 Python 依赖
 ├── SKILL.md                        # 主流程与核心约束
@@ -206,7 +227,8 @@ pptx-structured-explainer/
     │   ├── SKILL.md                # PPT 文件操作流程
     │   ├── agents/openai.yaml
     │   ├── references/
-    │   │   └── font-compatibility.md
+    │   │   ├── font-compatibility.md
+    │   │   └── windows.md
     │   └── scripts/
     │       ├── inventory_pptx.py
     │       ├── audit_media.py

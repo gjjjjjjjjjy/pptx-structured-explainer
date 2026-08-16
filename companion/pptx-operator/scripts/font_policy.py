@@ -124,11 +124,21 @@ def installed_font_families() -> tuple[dict[str, str], str]:
 
 
 def find_soffice() -> Path | None:
+    program_files = [
+        os.environ.get("PROGRAMFILES"),
+        os.environ.get("PROGRAMFILES(X86)"),
+    ]
     for value in (
         shutil.which("soffice"),
+        shutil.which("soffice.exe"),
         "/Applications/LibreOffice.app/Contents/MacOS/soffice",
         "/usr/bin/libreoffice",
         "/usr/local/bin/soffice",
+        *(
+            str(Path(root) / "LibreOffice" / "program" / "soffice.exe")
+            for root in program_files
+            if root
+        ),
     ):
         if value and Path(value).is_file():
             return Path(value).resolve()

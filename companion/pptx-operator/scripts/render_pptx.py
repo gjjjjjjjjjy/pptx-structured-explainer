@@ -1,23 +1,31 @@
 #!/usr/bin/env python3
-"""Render a PPTX/POTX to slide PNGs and a contact sheet using LibreOffice."""
+"""Render a PPTX/POTX to PDF, slide PNGs, and a contact sheet."""
 
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
+from functools import lru_cache
 from pathlib import Path
 
 
 def find_soffice() -> str | None:
+    program_files = [
+        os.environ.get("PROGRAMFILES"),
+        os.environ.get("PROGRAMFILES(X86)"),
+    ]
     candidates = [
         shutil.which("soffice"),
+        shutil.which("soffice.exe"),
         "/Applications/LibreOffice.app/Contents/MacOS/soffice",
         "/usr/bin/libreoffice",
         "/usr/local/bin/soffice",
+        *(str(Path(root) / "LibreOffice" / "program" / "soffice.exe") for root in program_files if root),
     ]
     for candidate in candidates:
         if candidate and Path(candidate).is_file():
@@ -25,11 +33,43 @@ def find_soffice() -> str | None:
     return None
 
 
+def find_powershell() -> str | None:
+    for name in ("powershell.exe", "pwsh.exe", "powershell", "pwsh"):
+        executable = shutil.which(name)
+        if executable:
+            return executable
+    return None
+
+
+def windows_creation_flags() -> int:
+    return getattr(subprocess, "CREATE_NO_WINDOW", 0) if sys.platform == "win32" else 0
+
+
+@lru_cache(maxsize=1)
 def has_powerpoint() -> bool:
-    return sys.platform == "darwin" and Path("/Applications/Microsoft PowerPoint.app").is_dir()
+    if sys.platform == "darwin":
+        return Path("/Applications/Microsoft PowerPoint.app").is_dir()
+    if sys.platform != "win32":
+        return False
+    powershell = find_powershell()
+    if not powershell:
+        return False
+    probe = (
+        "$ErrorActionPreference='Stop'; "
+        "$t=[type]::GetTypeFromProgID('PowerPoint.Application'); "
+        "if ($null -eq $t) { exit 1 } else { exit 0 }"
+    )
+    result = subprocess.run(
+        [powershell, "-NoProfile", "-NonInteractive", "-Command", probe],
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        creationflags=windows_creation_flags(),
+    )
+    return result.returncode == 0
 
 
-def export_with_powerpoint(deck: Path, pdf_path: Path) -> None:
+def export_with_powerpoint_macos(deck: Path, pdf_path: Path) -> None:
     script = r'''
 on run argv
     set inputPath to item 1 of argv
@@ -61,6 +101,89 @@ end run
     raise RuntimeError(
         f"Microsoft PowerPoint export failed with exit code {result.returncode}: {detail}"
     )
+
+
+WINDOWS_POWERPOINT_EXPORT_SCRIPT = r'''
+param(
+    [Parameter(Mandatory=$true)][string]$InputPath,
+    [Parameter(Mandatory=$true)][string]$OutputPath
+)
+$ErrorActionPreference = "Stop"
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$powerPoint = $null
+$presentation = $null
+try {
+    $powerPoint = New-Object -ComObject PowerPoint.Application
+    $powerPoint.DisplayAlerts = 1
+    $presentation = $powerPoint.Presentations.Open($InputPath, $true, $false, $false)
+    $presentation.SaveAs($OutputPath, 32)
+    if (-not (Test-Path -LiteralPath $OutputPath)) {
+        throw "PowerPoint SaveAs did not create the requested PDF"
+    }
+}
+finally {
+    if ($null -ne $presentation) {
+        try { $presentation.Close() } catch {}
+        try { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($presentation) } catch {}
+    }
+    if ($null -ne $powerPoint) {
+        try { $powerPoint.Quit() } catch {}
+        try { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($powerPoint) } catch {}
+    }
+    [GC]::Collect()
+    [GC]::WaitForPendingFinalizers()
+}
+'''
+
+
+def export_with_powerpoint_windows(
+    deck: Path, pdf_path: Path, powershell: str | None = None
+) -> None:
+    powershell = powershell or find_powershell()
+    if not powershell:
+        raise RuntimeError("PowerShell was not found; Windows PowerPoint automation is unavailable")
+    pdf_path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="pptx-powerpoint-") as temp_name:
+        script_path = Path(temp_name) / "export-powerpoint.ps1"
+        # Windows PowerShell 5.1 requires a BOM for reliable Chinese path/script decoding.
+        script_path.write_text(WINDOWS_POWERPOINT_EXPORT_SCRIPT, encoding="utf-8-sig")
+        result = subprocess.run(
+            [
+                powershell,
+                "-NoProfile",
+                "-NonInteractive",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                str(script_path),
+                "-InputPath",
+                str(deck),
+                "-OutputPath",
+                str(pdf_path),
+            ],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            errors="replace",
+            creationflags=windows_creation_flags(),
+        )
+    if result.returncode != 0:
+        detail = result.stdout.strip() or "no Windows PowerPoint automation diagnostic output"
+        raise RuntimeError(
+            f"Microsoft PowerPoint COM export failed with exit code {result.returncode}: {detail}"
+        )
+    if not pdf_path.is_file() or pdf_path.stat().st_size == 0:
+        raise RuntimeError("Microsoft PowerPoint COM export completed without a non-empty PDF")
+
+
+def export_with_powerpoint(deck: Path, pdf_path: Path) -> None:
+    if sys.platform == "darwin":
+        export_with_powerpoint_macos(deck, pdf_path)
+    elif sys.platform == "win32":
+        export_with_powerpoint_windows(deck, pdf_path)
+    else:
+        raise RuntimeError("Microsoft PowerPoint automation is supported only on macOS and Windows")
 
 
 def export_with_libreoffice(deck: Path, pdf_path: Path, soffice: str) -> None:
@@ -160,19 +283,38 @@ def make_contact_sheet(pages: list[Path], destination: Path, columns: int = 4) -
     return True
 
 
+def print_backend_diagnostics() -> None:
+    print(f"platform={sys.platform}")
+    print(f"powershell={find_powershell() or 'NOT FOUND'}")
+    print(f"powerpoint={'AVAILABLE' if has_powerpoint() else 'NOT AVAILABLE'}")
+    print(f"libreoffice={find_soffice() or 'NOT FOUND'}")
+    print(f"pdftoppm={shutil.which('pdftoppm') or 'NOT FOUND (PyMuPDF fallback will be used)'}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("deck", type=Path)
-    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("deck", type=Path, nargs="?")
+    parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--dpi", type=int, default=144)
     parser.add_argument(
         "--backend",
         choices=("auto", "powerpoint", "libreoffice"),
         default="auto",
-        help="PDF export backend; auto prefers Microsoft PowerPoint on macOS",
+        help="PDF export backend; auto prefers Microsoft PowerPoint on macOS/Windows",
     )
     parser.add_argument("--force", action="store_true")
+    parser.add_argument(
+        "--diagnose",
+        action="store_true",
+        help="report platform rendering backends without opening a presentation",
+    )
     args = parser.parse_args()
+
+    if args.diagnose:
+        print_backend_diagnostics()
+        return
+    if args.deck is None or args.output_dir is None:
+        parser.error("deck and --output-dir are required unless --diagnose is used")
 
     deck = args.deck.resolve()
     output_dir = args.output_dir.resolve()
@@ -191,7 +333,10 @@ def main() -> None:
     soffice = find_soffice()
     if args.backend == "powerpoint" or (args.backend == "auto" and has_powerpoint()):
         if not has_powerpoint():
-            parser.error("Microsoft PowerPoint is not installed in /Applications")
+            parser.error(
+                "Microsoft PowerPoint automation is unavailable; install desktop PowerPoint "
+                "and, on Windows, ensure PowerShell and the PowerPoint COM registration are available"
+            )
         backend = "Microsoft PowerPoint"
     elif args.backend == "libreoffice" or (args.backend == "auto" and soffice):
         if not soffice:
@@ -199,7 +344,7 @@ def main() -> None:
         backend = "LibreOffice"
     else:
         print("FAIL: no supported rendering backend found", file=sys.stderr)
-        print("Install Microsoft PowerPoint on macOS or LibreOffice.", file=sys.stderr)
+        print("Install Microsoft PowerPoint on macOS/Windows or install LibreOffice.", file=sys.stderr)
         raise SystemExit(2)
 
     pdf_path = output_dir / f"{deck.stem}.pdf"

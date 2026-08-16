@@ -17,6 +17,8 @@ Operate on PowerPoint files with a render-and-verify workflow. Prefer native Pow
 
 Read [references/operations.md](references/operations.md) before creating or editing a presentation. Read [references/render-and-qa.md](references/render-and-qa.md) before delivery.
 
+On Windows, read [references/windows.md](references/windows.md) before installing fonts, writing shell commands, selecting a renderer, or running PowerPoint automation. Use native Windows Python and PowerShell syntax; do not emit Bash line continuations in PowerShell instructions.
+
 ## Required safety rules
 
 - Never overwrite the source presentation during construction or diagnosis.
@@ -44,6 +46,8 @@ python scripts/audit_media.py deck.pptx
 python scripts/validate_pptx.py deck.pptx
 python scripts/render_pptx.py deck.pptx --output-dir rendered
 ```
+
+Run `python scripts/render_pptx.py --diagnose` first on a new machine. On macOS and Windows, `auto` prefers installed desktop PowerPoint; on Linux and unattended Windows sessions, use LibreOffice.
 
 The inventory recursively visits grouped shapes. Treat it as structural evidence, not a substitute for rendered-slide inspection.
 

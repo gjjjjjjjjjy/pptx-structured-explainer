@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import filecmp
 import os
 import shutil
 import subprocess
@@ -126,8 +127,24 @@ def register_windows_font(path: Path) -> None:
             winreg.REG_SZ,
             str(path),
         )
-    ctypes.windll.gdi32.AddFontResourceExW(str(path), 0x10, 0)
-    ctypes.windll.user32.SendMessageTimeoutW(0xFFFF, 0x001D, 0, 0, 0x0002, 1000, None)
+    # Register for the current desktop session; the HKCU entry above makes it
+    # persistent for future sign-ins without requiring administrator rights.
+    loaded = ctypes.windll.gdi32.AddFontResourceExW(str(path), 0, 0)
+    if loaded == 0:
+        print(
+            f"WARN: font registration is persistent but the current Windows session did not load it: {path}; "
+            "restart PowerPoint or sign in again"
+        )
+    message_result = ctypes.c_ulong()
+    ctypes.windll.user32.SendMessageTimeoutW(
+        0xFFFF,
+        0x001D,
+        0,
+        0,
+        0x0002,
+        1000,
+        ctypes.byref(message_result),
+    )
 
 
 def install_bundled_fonts(dry_run: bool) -> None:
@@ -142,7 +159,10 @@ def install_bundled_fonts(dry_run: bool) -> None:
         if dry_run:
             continue
         destination.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, target)
+        if not target.exists() or not filecmp.cmp(source, target, shallow=False):
+            shutil.copy2(source, target)
+        else:
+            print(f"font_up_to_date={target}")
         if sys.platform == "win32":
             register_windows_font(target)
     if not dry_run and sys.platform not in {"darwin", "win32"}:

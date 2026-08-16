@@ -74,7 +74,7 @@ python scripts/svg_render.py output.svg output.png
 
 Use `assets/examples/task-tree.json` as a minimal example.
 
-Rendering is browser-free. `auto` tries `resvg`, `rsvg-convert`, Sharp, then CairoSVG. Use `--backend sharp` or another explicit backend when reproducible backend selection matters.
+Rendering is browser-free. `auto` tries `resvg`, `rsvg-convert`, Sharp, Windows desktop PowerPoint, then CairoSVG. Use `--backend sharp`, `--backend powerpoint`, or another explicit backend when reproducible backend selection matters. The PowerPoint SVG backend requires native Windows Python and an interactive user session; use a standalone renderer for unattended services.
 
 ## Custom quick start
 

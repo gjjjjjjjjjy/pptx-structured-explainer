@@ -9,7 +9,9 @@
 
 ## Rendering backends
 
-Use Microsoft PowerPoint for the final review when the deck depends on PowerPoint-specific fonts, animation, GIF timing, SVG behavior, audio, or video. On macOS the bundled renderer prefers Microsoft PowerPoint; otherwise it can automate LibreOffice-based PDF and PNG generation. LibreOffice output is a useful automated preview but may differ from PowerPoint.
+Use Microsoft PowerPoint for the final review when the deck depends on PowerPoint-specific fonts, animation, GIF timing, SVG behavior, audio, or video. On macOS the bundled renderer uses AppleScript; on Windows it uses PowerShell COM automation. `auto` prefers desktop PowerPoint on both platforms and otherwise automates LibreOffice-based PDF and PNG generation. LibreOffice output is a useful automated preview but may differ from PowerPoint.
+
+Run `render_pptx.py --diagnose` on a new host. Windows PowerPoint automation requires native Windows Python and an interactive desktop session; use LibreOffice for a Windows service, Session 0, WSL, or another unattended environment. Read [windows.md](windows.md) for Windows commands and runtime requirements.
 
 Record the backend used. Do not claim PowerPoint-equivalent playback when only a static LibreOffice render was tested.
 
