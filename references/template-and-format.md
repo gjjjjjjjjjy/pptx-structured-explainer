@@ -56,6 +56,8 @@ Offer a concise choice, not an open-ended design interview:
 
 Create one representative style sample after these choices are confirmed.
 
+For a Chinese deck with no supplied template, default the Chinese title and body family to `Source Han Sans SC` when it is visible to the target renderer. Use `Source Han Serif SC` only when the user confirms a serif/Song-style visual direction. If the preferred family is unavailable, report the selected fallback before production.
+
 ## Template report
 
 Report template findings in a compact form:

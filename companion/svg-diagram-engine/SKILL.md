@@ -94,7 +94,7 @@ python scripts/svg_render.py custom.svg custom.png --scale 2
 - Keep body text at least 18 px on a 1600×900 canvas unless the user approves a denser technical plate.
 - Use paths and decorative effects only when they clarify structure or focus.
 - Avoid `script`, `foreignObject`, external images, web fonts, and linked resources. If an SVG must contain a raster image, embed PNG/JPEG/WebP bytes as a validated base64 `data:image/...` URI; never use a local path, HTTP URL, or ordinary relative file reference.
-- Use an explicit fallback font stack containing common Chinese and Latin fonts.
+- Use an explicit fallback font stack. With no renderer-visible template font, put `Source Han Sans SC` first for Chinese diagrams, followed by `Noto Sans CJK SC`, `Noto Sans SC`, common platform Chinese fonts, and a generic sans-serif fallback.
 - When a PPT template is available, obtain the renderer-visible Chinese title/body font from `pptx-operator/scripts/font_policy.py --renderer <target>` and put that font first in the SVG font stack. Do not use Arial as the primary family for Chinese SVG text.
 - Keep critical labels as PowerPoint-native text later when frequent editing is required.
 - Never flatten a whole slide into SVG merely to simplify implementation.

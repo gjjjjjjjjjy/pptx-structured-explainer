@@ -62,7 +62,7 @@ Use native objects whenever the format supports them. For template-derived work,
 
 Native connector geometry must use non-negative `cx` and `cy`. When the end point lies left of or above the start point, normalize the bounding box and encode direction with `flipH` and/or `flipV`.
 
-For Chinese or mixed Chinese/Latin decks, select fonts from the template and the target renderer before creating native text. Keep Arial only for Latin-only runs. Write explicit DrawingML font metadata and `zh-CN` language metadata for every native run containing Han characters; LibreOffice does not reliably recover Chinese glyphs from an Arial-only run. For a LibreOffice target, split mixed Chinese/Latin runs and assign the chosen CJK font to both `a:latin` and `a:ea` on the Han runs. Use:
+For Chinese or mixed Chinese/Latin decks, select fonts from the template and the target renderer before creating native text. Respect a renderer-visible template font; otherwise use `Source Han Sans SC` as the default Chinese title and body family. Use `Source Han Serif SC` only for a confirmed serif/Song-style design. Keep Arial only for Latin-only runs. Write explicit DrawingML font metadata and `zh-CN` language metadata for every native run containing Han characters; LibreOffice does not reliably recover Chinese glyphs from an Arial-only run. For a LibreOffice target, split mixed Chinese/Latin runs and assign the chosen CJK font to both `a:latin` and `a:ea` on the Han runs. Use:
 
 ```bash
 python scripts/font_policy.py --template template.pptx --renderer libreoffice

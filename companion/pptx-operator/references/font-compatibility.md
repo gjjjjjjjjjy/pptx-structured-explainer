@@ -4,16 +4,17 @@
 
 1. Read the template theme's major/minor East Asian fonts and its `Hans` supplemental fonts.
 2. Keep a template font only when it is visible to the target rendering backend.
-3. Otherwise select a visible Simplified Chinese font for the current platform and renderer.
-4. If no reliable CJK font exists, stop and request installation/configuration of `Noto Sans CJK SC` or another approved font. Never fall back to Arial for Han text.
+3. Otherwise use `Source Han Sans SC` as the default Chinese title and body family when it is visible to the target renderer.
+4. Use `Source Han Serif SC` only when the confirmed template or visual direction requires a serif/Song-style Chinese face; do not mix it into ordinary sans-serif body text by default.
+5. If the Source Han family is unavailable, select a renderer-visible fallback. If no reliable CJK font exists, stop and request installation/configuration. Never fall back to Arial for Han text.
 
-Preferred system candidates:
+Fallback candidates after `Source Han Sans SC`:
 
-- macOS: `PingFang SC`, `Hiragino Sans GB`, `Heiti SC`;
-- Windows: `Microsoft YaHei`, `DengXian`, `SimSun`, `SimHei`;
-- Linux/LibreOffice: `Noto Sans CJK SC`, `Noto Sans SC`, `Source Han Sans SC`, `WenQuanYi Micro Hei`.
+- macOS: `Noto Sans CJK SC`, `Noto Sans SC`, `PingFang SC`, `Hiragino Sans GB`, `Heiti SC`;
+- Windows: `Noto Sans CJK SC`, `Noto Sans SC`, `Microsoft YaHei`, `DengXian`, `SimSun`, `SimHei`;
+- Linux/LibreOffice: `Noto Sans CJK SC`, `Noto Sans SC`, `WenQuanYi Micro Hei`.
 
-Use the template's major East Asian font for titles and minor East Asian font for body text when both are renderer-visible. Keep Arial, Calibri, or another approved Latin font only for Latin-only runs.
+Use the template's major East Asian font for titles and minor East Asian font for body text when both are renderer-visible. With no template, use `Source Han Sans SC` for both Chinese title and body text; express hierarchy through size and weight. Keep Arial, Calibri, or another approved Latin font only for Latin-only runs.
 
 “Installed on the operating system” and “visible to the renderer” are not always equivalent. A self-contained LibreOffice runtime may use only its private font directory. The policy command therefore accepts `--renderer system|powerpoint|libreoffice` and stops when the chosen backend cannot see a CJK font.
 
@@ -34,8 +35,8 @@ The actual `a:ea` value must come from template/renderer selection. For LibreOff
 
 ```xml
 <a:rPr lang="zh-CN">
-  <a:latin typeface="Noto Sans CJK SC"/>
-  <a:ea typeface="Noto Sans CJK SC"/>
+  <a:latin typeface="Source Han Sans SC"/>
+  <a:ea typeface="Source Han Sans SC"/>
 </a:rPr>
 ```
 

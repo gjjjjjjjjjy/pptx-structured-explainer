@@ -13,9 +13,14 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parent
-EXPLAINER_FILES = ("SKILL.md", "agents", "references", "scripts", "tests", "LICENSE")
+EXPLAINER_FILES = ("SKILL.md", "agents", "assets", "references", "scripts", "tests", "LICENSE")
 COMPANION_NAMES = ("pptx-operator", "svg-diagram-engine")
 REQUIREMENTS = REPO_ROOT / "requirements.txt"
+BUNDLED_FONT_DIR = REPO_ROOT / "assets" / "fonts" / "source-han-sans-sc"
+BUNDLED_FONT_FILES = (
+    "SourceHanSansSC-Regular.otf",
+    "SourceHanSansSC-Bold.otf",
+)
 
 
 def default_codex_dir() -> Path:
@@ -97,6 +102,55 @@ def install_dependencies() -> None:
     )
 
 
+def user_font_directory() -> Path:
+    if sys.platform == "darwin":
+        return Path.home() / "Library" / "Fonts"
+    if sys.platform == "win32":
+        local_app_data = os.environ.get("LOCALAPPDATA")
+        base = Path(local_app_data) if local_app_data else Path.home() / "AppData" / "Local"
+        return base / "Microsoft" / "Windows" / "Fonts"
+    return Path.home() / ".local" / "share" / "fonts"
+
+
+def register_windows_font(path: Path) -> None:
+    import ctypes
+    import winreg
+
+    style = "Bold" if "Bold" in path.stem else "Regular"
+    key_path = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
+    with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path) as key:
+        winreg.SetValueEx(
+            key,
+            f"Source Han Sans SC {style} (OpenType)",
+            0,
+            winreg.REG_SZ,
+            str(path),
+        )
+    ctypes.windll.gdi32.AddFontResourceExW(str(path), 0x10, 0)
+    ctypes.windll.user32.SendMessageTimeoutW(0xFFFF, 0x001D, 0, 0, 0x0002, 1000, None)
+
+
+def install_bundled_fonts(dry_run: bool) -> None:
+    destination = user_font_directory()
+    print(f"font_dir={destination}")
+    for filename in BUNDLED_FONT_FILES:
+        source = BUNDLED_FONT_DIR / filename
+        if not source.is_file():
+            raise FileNotFoundError(f"bundled font is missing: {source}")
+        target = destination / filename
+        print(f"install_font={target}")
+        if dry_run:
+            continue
+        destination.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+        if sys.platform == "win32":
+            register_windows_font(target)
+    if not dry_run and sys.platform not in {"darwin", "win32"}:
+        fc_cache = shutil.which("fc-cache")
+        if fc_cache:
+            subprocess.run([fc_cache, "-f", str(destination)], check=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -123,6 +177,11 @@ def main() -> None:
         action="store_true",
         help="install Python dependencies into the current interpreter environment",
     )
+    parser.add_argument(
+        "--install-fonts",
+        action="store_true",
+        help="install bundled Source Han Sans SC Regular/Bold into the current user's font directory",
+    )
     parser.add_argument("--dry-run", action="store_true", help="show paths without writing")
     args = parser.parse_args()
 
@@ -135,6 +194,8 @@ def main() -> None:
     try:
         if args.install_deps and not args.dry_run:
             install_dependencies()
+        if args.install_fonts:
+            install_bundled_fonts(dry_run=args.dry_run)
         for skills_dir in dict.fromkeys(targets):
             install_bundle(skills_dir, force=args.force, dry_run=args.dry_run)
     except (OSError, FileExistsError, subprocess.CalledProcessError) as exc:

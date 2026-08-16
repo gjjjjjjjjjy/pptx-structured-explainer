@@ -24,68 +24,68 @@
   <rect x="0" y="0" width="1600" height="900" fill="#F7F9FC"/>
   <rect x="0" y="0" width="1600" height="146" fill="url(#headerGlow)"/>
   <rect x="72" y="52" width="10" height="56" rx="5" fill="#6A1B9A"/>
-  <text x="104" y="82" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="38" font-weight="700" fill="#172033">KV Cache 如何与 Causal Mask 共同完成逐 Token 推理</text>
-  <text x="104" y="119" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="21" fill="#667085">NanoChat Decoder-Only：缓存负责复用，掩码负责限制可见范围</text>
+  <text x="104" y="82" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="38" font-weight="700" fill="#172033">KV Cache 如何与 Causal Mask 共同完成逐 Token 推理</text>
+  <text x="104" y="119" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="21" fill="#667085">NanoChat Decoder-Only：缓存负责复用，掩码负责限制可见范围</text>
   <rect x="1304" y="48" width="224" height="50" rx="25" fill="#172033"/>
-  <text x="1416" y="80" text-anchor="middle" font-family="Arial, PingFang SC, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">Decode step  t = 4</text>
+  <text x="1416" y="80" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">Decode step  t = 4</text>
 
   <rect x="64" y="174" width="474" height="548" rx="24" fill="#FFFFFF" stroke="#D5DFEC" stroke-width="2" filter="url(#shadow)"/>
   <circle cx="104" cy="215" r="20" fill="#15936F"/>
-  <text x="104" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">1</text>
-  <text x="138" y="222" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="27" font-weight="700" fill="#172033">KV Cache：保存已计算的 K / V</text>
-  <text x="88" y="258" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#667085">历史 Token 不再重复计算；当前步只追加一组 K₄、V₄</text>
+  <text x="104" y="222" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="138" y="222" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="27" font-weight="700" fill="#172033">KV Cache：保存已计算的 K / V</text>
+  <text x="88" y="258" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="18" fill="#667085">历史 Token 不再重复计算；当前步只追加一组 K₄、V₄</text>
 
   <rect x="88" y="284" width="426" height="54" rx="12" fill="#F1F5F9"/>
-  <text x="114" y="318" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="600" fill="#475467">Token</text>
-  <text x="294" y="318" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#475467">Key</text>
-  <text x="420" y="318" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#475467">Value</text>
+  <text x="114" y="318" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="18" font-weight="600" fill="#475467">Token</text>
+  <text x="294" y="318" font-family="Source Han Sans SC, sans-serif" font-size="18" font-weight="600" fill="#475467">Key</text>
+  <text x="420" y="318" font-family="Source Han Sans SC, sans-serif" font-size="18" font-weight="600" fill="#475467">Value</text>
 
   <rect x="88" y="350" width="426" height="62" rx="13" fill="url(#cacheFill)" stroke="#B9E4D4"/>
   <rect x="103" y="363" width="126" height="36" rx="18" fill="#DDF5EC"/>
-  <text x="166" y="388" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="19" font-weight="600" fill="#116B54">t₁  我</text>
-  <text x="301" y="389" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#15936F">K₁</text>
-  <text x="428" y="389" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#15936F">V₁</text>
+  <text x="166" y="388" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="19" font-weight="600" fill="#116B54">t₁  我</text>
+  <text x="301" y="389" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#15936F">K₁</text>
+  <text x="428" y="389" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#15936F">V₁</text>
 
   <rect x="88" y="422" width="426" height="62" rx="13" fill="url(#cacheFill)" stroke="#B9E4D4"/>
   <rect x="103" y="435" width="126" height="36" rx="18" fill="#DDF5EC"/>
-  <text x="166" y="460" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="19" font-weight="600" fill="#116B54">t₂  喜欢</text>
-  <text x="301" y="461" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#15936F">K₂</text>
-  <text x="428" y="461" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#15936F">V₂</text>
+  <text x="166" y="460" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="19" font-weight="600" fill="#116B54">t₂  喜欢</text>
+  <text x="301" y="461" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#15936F">K₂</text>
+  <text x="428" y="461" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#15936F">V₂</text>
 
   <rect x="88" y="494" width="426" height="62" rx="13" fill="url(#cacheFill)" stroke="#B9E4D4"/>
   <rect x="103" y="507" width="126" height="36" rx="18" fill="#DDF5EC"/>
-  <text x="166" y="532" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="19" font-weight="600" fill="#116B54">t₃  学习</text>
-  <text x="301" y="533" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#15936F">K₃</text>
-  <text x="428" y="533" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#15936F">V₃</text>
+  <text x="166" y="532" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="19" font-weight="600" fill="#116B54">t₃  学习</text>
+  <text x="301" y="533" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#15936F">K₃</text>
+  <text x="428" y="533" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#15936F">V₃</text>
 
   <rect x="88" y="572" width="426" height="74" rx="15" fill="#EEF5FF" stroke="#2F7FF7" stroke-width="2"/>
   <rect x="103" y="590" width="162" height="38" rx="19" fill="#DCEAFF"/>
-  <text x="184" y="616" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="19" font-weight="700" fill="#1D5FC4">t₄  Transformer</text>
-  <text x="301" y="617" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#2F7FF7">K₄</text>
-  <text x="428" y="617" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#2F7FF7">V₄</text>
-  <text x="88" y="683" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="600" fill="#15936F">Cache 内容：</text>
-  <text x="200" y="683" font-family="Arial, sans-serif" font-size="18" fill="#475467">K₁…K₄  与  V₁…V₄</text>
+  <text x="184" y="616" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="19" font-weight="700" fill="#1D5FC4">t₄  Transformer</text>
+  <text x="301" y="617" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#2F7FF7">K₄</text>
+  <text x="428" y="617" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#2F7FF7">V₄</text>
+  <text x="88" y="683" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="18" font-weight="600" fill="#15936F">Cache 内容：</text>
+  <text x="200" y="683" font-family="Source Han Sans SC, sans-serif" font-size="18" fill="#475467">K₁…K₄  与  V₁…V₄</text>
 
   <path d="M538 443 C565 443 566 443 590 443" fill="none" stroke="#15936F" stroke-width="4" marker-end="url(#arrowGreen)"/>
 
   <rect x="590" y="174" width="428" height="548" rx="24" fill="#FFFFFF" stroke="#D5DFEC" stroke-width="2" filter="url(#shadow)"/>
   <circle cx="630" cy="215" r="20" fill="#6A1B9A"/>
-  <text x="630" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">2</text>
-  <text x="664" y="222" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="27" font-weight="700" fill="#172033">Causal Mask：决定能看谁</text>
-  <text x="614" y="258" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#667085">0 保留注意力；−∞ 经 Softmax 后权重趋近 0</text>
+  <text x="630" y="222" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">2</text>
+  <text x="664" y="222" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="27" font-weight="700" fill="#172033">Causal Mask：决定能看谁</text>
+  <text x="614" y="258" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="18" fill="#667085">0 保留注意力；−∞ 经 Softmax 后权重趋近 0</text>
 
-  <text x="690" y="311" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">K₁</text>
-  <text x="758" y="311" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">K₂</text>
-  <text x="826" y="311" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">K₃</text>
-  <text x="894" y="311" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">K₄</text>
-  <text x="962" y="311" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="17" font-weight="700" fill="#667085">含义</text>
+  <text x="690" y="311" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="17" font-weight="700" fill="#667085">K₁</text>
+  <text x="758" y="311" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="17" font-weight="700" fill="#667085">K₂</text>
+  <text x="826" y="311" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="17" font-weight="700" fill="#667085">K₃</text>
+  <text x="894" y="311" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="17" font-weight="700" fill="#667085">K₄</text>
+  <text x="962" y="311" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" font-weight="700" fill="#667085">含义</text>
 
-  <text x="628" y="357" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">Q₁</text>
-  <text x="628" y="425" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">Q₂</text>
-  <text x="628" y="493" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#667085">Q₃</text>
-  <text x="628" y="561" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#1D5FC4">Q₄</text>
+  <text x="628" y="357" font-family="Source Han Sans SC, sans-serif" font-size="17" font-weight="700" fill="#667085">Q₁</text>
+  <text x="628" y="425" font-family="Source Han Sans SC, sans-serif" font-size="17" font-weight="700" fill="#667085">Q₂</text>
+  <text x="628" y="493" font-family="Source Han Sans SC, sans-serif" font-size="17" font-weight="700" fill="#667085">Q₃</text>
+  <text x="628" y="561" font-family="Source Han Sans SC, sans-serif" font-size="17" font-weight="700" fill="#1D5FC4">Q₄</text>
 
-  <g font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="middle">
+  <g font-family="Source Han Sans SC, sans-serif" font-size="18" font-weight="700" text-anchor="middle">
     <rect x="660" y="326" width="60" height="52" rx="10" fill="#DDF5EC"/><text x="690" y="359" fill="#116B54">0</text>
     <rect x="728" y="326" width="60" height="52" rx="10" fill="#FCE8EE"/><text x="758" y="359" fill="#B4235A">−∞</text>
     <rect x="796" y="326" width="60" height="52" rx="10" fill="#FCE8EE"/><text x="826" y="359" fill="#B4235A">−∞</text>
@@ -107,53 +107,53 @@
     <rect x="796" y="530" width="60" height="52" rx="10" fill="#DCEAFF"/><text x="826" y="563" fill="#1D5FC4">0</text>
     <rect x="864" y="530" width="60" height="52" rx="10" fill="#DCEAFF"/><text x="894" y="563" fill="#1D5FC4">0</text>
   </g>
-  <text x="952" y="357" font-family="PingFang SC, sans-serif" font-size="17" fill="#667085">只看自己</text>
-  <text x="952" y="425" font-family="PingFang SC, sans-serif" font-size="17" fill="#667085">看历史</text>
-  <text x="952" y="493" font-family="PingFang SC, sans-serif" font-size="17" fill="#667085">看历史</text>
-  <text x="952" y="561" font-family="PingFang SC, sans-serif" font-size="17" font-weight="700" fill="#1D5FC4">当前步</text>
+  <text x="952" y="357" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" fill="#667085">只看自己</text>
+  <text x="952" y="425" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" fill="#667085">看历史</text>
+  <text x="952" y="493" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" fill="#667085">看历史</text>
+  <text x="952" y="561" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" font-weight="700" fill="#1D5FC4">当前步</text>
 
   <rect x="614" y="618" width="380" height="72" rx="16" fill="#F8F5FF" stroke="#D7C5EE"/>
-  <text x="804" y="648" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#6A1B9A">下三角结构 = 禁止看到未来 Token</text>
-  <text x="804" y="676" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="17" fill="#667085">Decode 的 Q₄ 可以读取 K₁～K₄</text>
+  <text x="804" y="648" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="18" font-weight="700" fill="#6A1B9A">下三角结构 = 禁止看到未来 Token</text>
+  <text x="804" y="676" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" fill="#667085">Decode 的 Q₄ 可以读取 K₁～K₄</text>
 
   <path d="M1018 443 C1044 443 1044 443 1068 443" fill="none" stroke="#2F7FF7" stroke-width="4" marker-end="url(#arrowBlue)"/>
 
   <rect x="1068" y="174" width="468" height="548" rx="24" fill="#FFFFFF" stroke="#D5DFEC" stroke-width="2" filter="url(#shadow)"/>
   <circle cx="1108" cy="215" r="20" fill="#2F7FF7"/>
-  <text x="1108" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">3</text>
-  <text x="1142" y="222" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="27" font-weight="700" fill="#172033">当前 Token 完成注意力读取</text>
-  <text x="1092" y="258" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#667085">只新算 Q₄、K₄、V₄；历史 K / V 从 Cache 读取</text>
+  <text x="1108" y="222" text-anchor="middle" font-family="Source Han Sans SC, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">3</text>
+  <text x="1142" y="222" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="27" font-weight="700" fill="#172033">当前 Token 完成注意力读取</text>
+  <text x="1092" y="258" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="18" fill="#667085">只新算 Q₄、K₄、V₄；历史 K / V 从 Cache 读取</text>
 
   <rect x="1094" y="294" width="416" height="70" rx="16" fill="#EEF5FF" stroke="#A9C9FB"/>
-  <text x="1120" y="324" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#1D5FC4">① Score</text>
-  <text x="1120" y="349" font-family="Arial, sans-serif" font-size="18" fill="#172033">Q₄ × [K₁ K₂ K₃ K₄]ᵀ / √d</text>
+  <text x="1120" y="324" font-family="Source Han Sans SC, sans-serif" font-size="18" font-weight="700" fill="#1D5FC4">① Score</text>
+  <text x="1120" y="349" font-family="Source Han Sans SC, sans-serif" font-size="18" fill="#172033">Q₄ × [K₁ K₂ K₃ K₄]ᵀ / √d</text>
 
   <path d="M1302 364 L1302 390" stroke="#94A3B8" stroke-width="3" marker-end="url(#arrowBlue)"/>
   <rect x="1094" y="394" width="416" height="70" rx="16" fill="#F8F5FF" stroke="#D7C5EE"/>
-  <text x="1120" y="424" font-family="PingFang SC, Arial, sans-serif" font-size="18" font-weight="700" fill="#6A1B9A">② 加 Mask 并 Softmax</text>
-  <text x="1120" y="449" font-family="Arial, sans-serif" font-size="18" fill="#172033">+ [0  0  0  0]  →  [α₁ α₂ α₃ α₄]</text>
+  <text x="1120" y="424" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="18" font-weight="700" fill="#6A1B9A">② 加 Mask 并 Softmax</text>
+  <text x="1120" y="449" font-family="Source Han Sans SC, sans-serif" font-size="18" fill="#172033">+ [0  0  0  0]  →  [α₁ α₂ α₃ α₄]</text>
 
   <path d="M1302 464 L1302 490" stroke="#94A3B8" stroke-width="3" marker-end="url(#arrowBlue)"/>
   <rect x="1094" y="494" width="416" height="70" rx="16" fill="#EAF8F3" stroke="#B9E4D4"/>
-  <text x="1120" y="524" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#116B54">③ Weighted Sum</text>
-  <text x="1120" y="549" font-family="Arial, sans-serif" font-size="18" fill="#172033">Σ αᵢVᵢ  →  context h₄</text>
+  <text x="1120" y="524" font-family="Source Han Sans SC, sans-serif" font-size="18" font-weight="700" fill="#116B54">③ Weighted Sum</text>
+  <text x="1120" y="549" font-family="Source Han Sans SC, sans-serif" font-size="18" fill="#172033">Σ αᵢVᵢ  →  context h₄</text>
 
   <path d="M1302 564 L1302 590" stroke="#94A3B8" stroke-width="3" marker-end="url(#arrowBlue)"/>
   <rect x="1094" y="594" width="416" height="94" rx="18" fill="#172033"/>
-  <text x="1302" y="628" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#CBD5E1">输出层得到下一个 Token 的概率</text>
-  <text x="1302" y="663" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">预测：模型</text>
+  <text x="1302" y="628" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="18" fill="#CBD5E1">输出层得到下一个 Token 的概率</text>
+  <text x="1302" y="663" text-anchor="middle" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">预测：模型</text>
 
   <rect x="64" y="756" width="1472" height="104" rx="22" fill="#172033"/>
   <rect x="86" y="777" width="408" height="62" rx="16" fill="#263449"/>
   <circle cx="116" cy="808" r="8" fill="#15936F"/>
-  <text x="138" y="802" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">KV Cache = 复用机制</text>
-  <text x="138" y="828" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="17" fill="#CBD5E1">减少重复 K / V 投影与历史计算</text>
+  <text x="138" y="802" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">KV Cache = 复用机制</text>
+  <text x="138" y="828" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" fill="#CBD5E1">减少重复 K / V 投影与历史计算</text>
   <rect x="516" y="777" width="408" height="62" rx="16" fill="#263449"/>
   <circle cx="546" cy="808" r="8" fill="#A56CD6"/>
-  <text x="568" y="802" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">Causal Mask = 可见性规则</text>
-  <text x="568" y="828" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="17" fill="#CBD5E1">保证自回归生成不读取未来信息</text>
+  <text x="568" y="802" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">Causal Mask = 可见性规则</text>
+  <text x="568" y="828" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" fill="#CBD5E1">保证自回归生成不读取未来信息</text>
   <rect x="946" y="777" width="566" height="62" rx="16" fill="#263449"/>
   <circle cx="976" cy="808" r="8" fill="#4D9AFF"/>
-  <text x="998" y="802" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">二者不是替代关系：先限定可见范围，再读取已缓存状态</text>
-  <text x="998" y="828" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="17" fill="#CBD5E1">共同降低 Decode 阶段的单 Token 延迟</text>
+  <text x="998" y="802" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="19" font-weight="700" fill="#FFFFFF">二者不是替代关系：先限定可见范围，再读取已缓存状态</text>
+  <text x="998" y="828" font-family="Source Han Sans SC, Noto Sans CJK SC, sans-serif" font-size="17" fill="#CBD5E1">共同降低 Decode 阶段的单 Token 延迟</text>
 </svg>

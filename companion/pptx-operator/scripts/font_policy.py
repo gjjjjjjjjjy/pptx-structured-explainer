@@ -20,18 +20,26 @@ from defusedxml import ElementTree as ET
 A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 THEME_TOKENS = {"+mj-ea", "+mn-ea", "+mj-lt", "+mn-lt", ""}
 CJK_PREFERENCES = {
-    "Darwin": ["PingFang SC", "Hiragino Sans GB", "Heiti SC", "Noto Sans CJK SC", "Source Han Sans SC"],
+    "Darwin": [
+        "Source Han Sans SC",
+        "Noto Sans CJK SC",
+        "Noto Sans SC",
+        "PingFang SC",
+        "Hiragino Sans GB",
+        "Heiti SC",
+    ],
     "Windows": [
+        "Source Han Sans SC",
+        "Noto Sans CJK SC",
+        "Noto Sans SC",
         "Microsoft YaHei",
         "DengXian",
         "SimSun",
         "SimHei",
-        "Noto Sans CJK SC",
-        "Source Han Sans SC",
     ],
-    "Linux": ["Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "WenQuanYi Micro Hei"],
+    "Linux": ["Source Han Sans SC", "Noto Sans CJK SC", "Noto Sans SC", "WenQuanYi Micro Hei"],
 }
-LATIN_PREFERENCES = ["Arial", "Calibri", "Liberation Sans", "Noto Sans"]
+LATIN_PREFERENCES = ["Source Han Sans SC", "Noto Sans", "Liberation Sans", "Arial", "Calibri"]
 FONT_ALIASES = {
     "microsoft yahei": ["微软雅黑", "Microsoft YaHei UI"],
     "微软雅黑": ["Microsoft YaHei", "Microsoft YaHei UI"],
@@ -298,13 +306,14 @@ def recommend_fonts(template: Path | None = None, renderer: str = "system") -> d
         "selection": {
             "title_cjk": title_cjk,
             "body_cjk": body_cjk,
-            "title_latin": title_latin or "Arial",
-            "body_latin": body_latin or "Arial",
+            "title_latin": title_latin or title_cjk or "Arial",
+            "body_latin": body_latin or body_cjk or "Arial",
             "title_cjk_source": title_source if title_cjk else None,
             "body_cjk_source": body_source if body_cjk else None,
         },
         "rule": (
-            "Choose fonts visible to the target renderer. For LibreOffice, split mixed-script runs "
+            "Respect a renderer-visible template font; otherwise prefer Source Han Sans SC for Chinese. "
+            "For LibreOffice, split mixed-script runs "
             "and write the selected CJK font to both a:latin and a:ea on Han runs; never rely on Arial fallback."
         ),
     }
@@ -338,7 +347,8 @@ def main() -> None:
     if not selection["title_cjk"] or not selection["body_cjk"]:
         print(
             "FAIL: no reliable Simplified Chinese font is visible to the selected renderer; "
-            "install/configure Noto Sans CJK SC for that renderer or choose a backend with CJK fonts.",
+            "install/configure Source Han Sans SC (preferred) or Noto Sans CJK SC for that renderer, "
+            "or choose a backend with CJK fonts.",
             file=sys.stderr,
         )
         raise SystemExit(2)

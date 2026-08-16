@@ -18,7 +18,7 @@
 - 从主题、Markdown、文档、代码仓库或现有 PPT 设计演示文稿
 - 按照由浅入深的知识依赖组织内容（概念先于机制、指标定义先于结果表、正确性先于性能）
 - 在专业术语首次出现时就近解释；缩写必须同时给出展开形式和释义
-- 根据模板、操作系统和目标渲染后端自动选择中文标题/正文字体，不把 Arial 当作中文字体
+- 有模板时尊重可渲染的模板字体；无模板时中文标题和正文默认使用 `Source Han Sans SC`（思源黑体），不把 Arial 当作中文字体
 - 检查并修复 PowerPoint 会触发文件修复的负宽度/负高度连接线几何
 - 自带轻量回归 harness，覆盖 SVG 内嵌位图、PPTX 内嵌 SVG/PNG、外链拦截和移动目录验证
 - 先让用户选择 Structured、Hybrid、Custom 或逐图选择，再确认统一 SVG 风格并批量制作图示
@@ -34,7 +34,7 @@
 ```bash
 git clone https://github.com/gjjjjjjjjjy/pptx-structured-explainer.git
 cd pptx-structured-explainer
-python install.py --target both --install-deps
+python install.py --target both --install-deps --install-fonts
 ```
 
 可选目标：
@@ -60,6 +60,8 @@ python install.py --target both --dry-run
 如果目标目录已经存在，安装器默认停止，避免静默覆盖。确认更新时使用 `--force`；旧版本会移动到 Skills 目录同级的 `skills-backups/<时间戳>/`，避免备份被 Codex 或 Claude Code 误识别为可用 Skill，然后再写入新版本。
 
 `--install-deps` 会把 `python-pptx`、`defusedxml`、`Pillow`、`PyMuPDF` 和 `fontTools` 安装到运行安装器的 Python 环境。若环境已经统一管理这些依赖，可以去掉该参数，只安装 Skills。
+
+`--install-fonts` 会把仓库内附带的 `Source Han Sans SC` Regular / Bold 安装到当前用户的字体目录。字体为 Adobe 官方未修改文件，使用 SIL Open Font License 1.1，原始版权声明和完整许可证保存在 `assets/fonts/source-han-sans-sc/`。若不希望安装字体，去掉该参数即可；字体文件仍会随 Skill 复制，但 PowerPoint 只会使用已安装或文档已嵌入的字体。
 
 安装后可以调用 `/pptx-structured-explainer` 或 `$pptx-structured-explainer` 进入内容设计流程；实际操作文件时会配合 `pptx-operator`，复杂图示会配合 `svg-diagram-engine`。也可以直接描述任务，由 `description` 自动匹配。
 
@@ -135,7 +137,7 @@ python companion/pptx-operator/scripts/render_pptx.py deck-cjk.pptx \
   --output-dir rendered
 ```
 
-字体策略以目标渲染器实际可见的字体为准。若独立打包的 LibreOffice 看不到系统中文字体，命令会在生成前明确失败，并提示安装或配置 `Noto Sans CJK SC`，而不是继续依赖 Arial 回退并输出缺字页面。
+字体策略以目标渲染器实际可见的字体为准。没有可用模板字体时，中文默认优先选择 `Source Han Sans SC`；若独立打包的 LibreOffice 看不到该字体或其他中文字体，命令会在生成前明确失败，并提示安装或配置 `Source Han Sans SC` / `Noto Sans CJK SC`，而不是继续依赖 Arial 回退并输出缺字页面。
 
 ## 回归测试 harness
 
@@ -183,6 +185,8 @@ pptx-structured-explainer/
 ├── SKILL.md                        # 主流程与核心约束
 ├── agents/
 │   └── openai.yaml                 # Codex 界面配置
+├── assets/
+│   └── fonts/source-han-sans-sc/  # 思源黑体 SC Regular/Bold 与 OFL 1.1 许可证
 ├── references/
 │   ├── content-and-language.md     # 大纲、标题、术语、语言与深度要求
 │   ├── existing-deck-workflow.md   # 现有 PPT 的盘点与安全修改流程
@@ -220,8 +224,8 @@ pptx-structured-explainer/
             └── svg_contact_sheet.py
 ```
 
-三个 `SKILL.md` 分别负责内容设计、PPT 文件操作与 SVG 图示生成，`references/` 按需加载。仓库中的实现均采用 MIT License，不包含或复制其他专有 PPT Skill 的代码。
+三个 `SKILL.md` 分别负责内容设计、PPT 文件操作与 SVG 图示生成，`references/` 按需加载。本仓库的 Skill、脚本和文档采用 MIT License，不包含或复制其他专有 PPT Skill 的代码。随仓库分发的思源字体使用其自身的 SIL Open Font License 1.1，不属于根目录 MIT License 的授权范围。
 
 ## License
 
-本项目采用 [MIT License](LICENSE)。
+本项目的 Skill、脚本和文档采用 [MIT License](LICENSE)。`assets/fonts/source-han-sans-sc/` 中的字体文件版权归 Adobe 及相关贡献者所有，按该目录内的 [SIL Open Font License 1.1](assets/fonts/source-han-sans-sc/LICENSE.txt) 分发。

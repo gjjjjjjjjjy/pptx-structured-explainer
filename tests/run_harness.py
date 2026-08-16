@@ -429,6 +429,29 @@ class SkillHarness(unittest.TestCase):
         finally:
             sys.path.pop(0)
 
+    def test_08_source_han_is_default_cjk_family(self) -> None:
+        sys.path.insert(0, str(PPTX_SCRIPTS))
+        try:
+            import font_policy
+
+            installed = {
+                "source han sans sc": "Source Han Sans SC",
+                "noto sans cjk sc": "Noto Sans CJK SC",
+                "pingfang sc": "PingFang SC",
+                "microsoft yahei": "Microsoft YaHei",
+            }
+            for candidates in font_policy.CJK_PREFERENCES.values():
+                self.assertEqual(
+                    font_policy._pick(candidates, installed)[0],
+                    "Source Han Sans SC",
+                )
+            self.assertEqual(
+                font_policy._pick(font_policy.LATIN_PREFERENCES, installed)[0],
+                "Source Han Sans SC",
+            )
+        finally:
+            sys.path.pop(0)
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
