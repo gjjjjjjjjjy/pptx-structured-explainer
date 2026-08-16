@@ -39,6 +39,7 @@ Run:
 python scripts/inventory_pptx.py deck.pptx
 python scripts/font_policy.py --template deck.pptx --renderer libreoffice
 python scripts/audit_pptx_fonts.py deck.pptx --libreoffice-safe
+python scripts/audit_font_licenses.py deck.pptx --strict
 python scripts/audit_media.py deck.pptx
 python scripts/validate_pptx.py deck.pptx
 python scripts/render_pptx.py deck.pptx --output-dir rendered
@@ -62,13 +63,14 @@ Use native objects whenever the format supports them. For template-derived work,
 
 Native connector geometry must use non-negative `cx` and `cy`. When the end point lies left of or above the start point, normalize the bounding box and encode direction with `flipH` and/or `flipV`.
 
-For Chinese or mixed Chinese/Latin decks, select fonts from the template and the target renderer before creating native text. Respect a renderer-visible template font; otherwise use `Source Han Sans SC` as the default Chinese title and body family. Use `Source Han Serif SC` only for a confirmed serif/Song-style design. Keep Arial only for Latin-only runs. Write explicit DrawingML font metadata and `zh-CN` language metadata for every native run containing Han characters; LibreOffice does not reliably recover Chinese glyphs from an Arial-only run. For a LibreOffice target, split mixed Chinese/Latin runs and assign the chosen CJK font to both `a:latin` and `a:ea` on the Han runs. Use:
+For Chinese or mixed Chinese/Latin decks, select fonts from the template and the target renderer before creating native text, then require a verified license permitting free commercial use and redistribution. A font being installed or supplied by a template is not license evidence. Respect a renderer-visible template font only when it is in the verified allowlist; otherwise replace title, body, Chinese, and Latin text with `Source Han Sans SC`. Use `Source Han Serif SC` only for a confirmed serif/Song-style design. Write explicit DrawingML font metadata and `zh-CN` language metadata for every native run containing Han characters. For a LibreOffice target, split mixed Chinese/Latin runs and assign the chosen CJK font to both `a:latin` and `a:ea` on the Han runs. Use:
 
 ```bash
 python scripts/font_policy.py --template template.pptx --renderer libreoffice
 python scripts/apply_cjk_fonts.py draft.pptx draft-cjk.pptx \
   --template template.pptx --renderer libreoffice
 python scripts/audit_pptx_fonts.py draft-cjk.pptx --libreoffice-safe --strict
+python scripts/audit_font_licenses.py draft-cjk.pptx --strict
 ```
 
 Read [references/font-compatibility.md](references/font-compatibility.md) before creating, normalizing, or diagnosing Chinese native text.
@@ -100,7 +102,7 @@ After each batch of changes:
 4. inspect the entire deck as a contact sheet;
 5. copy the final file to an unrelated temporary directory and render the moved copy.
 
-Fix clipping, overlap, font substitution, unreadable text, broken media, distorted images, ambiguous connectors, negative transform extents, inconsistent spacing, and placeholder residue before delivery.
+Fix clipping, overlap, font substitution, unverified font licenses, unreadable text, broken media, distorted images, ambiguous connectors, negative transform extents, inconsistent spacing, and placeholder residue before delivery.
 
 When LibreOffice is a target or QA backend, treat an unsplit mixed-script run or a Han run whose `a:latin` and `a:ea` are not both the selected CJK font as a release failure. If `font_policy.py --renderer libreoffice` reports that no CJK font is visible, stop before building or rendering; do not assume host system fonts are visible inside a bundled LibreOffice runtime.
 

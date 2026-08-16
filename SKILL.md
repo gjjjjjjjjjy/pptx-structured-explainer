@@ -19,7 +19,8 @@ Create presentations only after resolving the knowledge structure and obtaining 
 - Make visuals encode relationships: sequence, hierarchy, comparison, data flow, architecture, or evidence. Do not add decorative images merely to satisfy a visual quota.
 - Explain every non-decorative visual encoding in place. State what boxes, circles, cells, colors, lines, sizes, and shaded regions represent; never leave the audience to infer a symbol's semantic meaning.
 - Keep titles, ordinary text, tables, charts, shapes, and simple diagrams editable in PowerPoint. Never deliver whole-slide raster images as editable slides.
-- For Chinese native text, inspect the supplied template and fonts visible to the target renderer. Respect a renderer-visible template font; otherwise default both Chinese titles and body text to `Source Han Sans SC`. Use `Source Han Serif SC` only for a confirmed serif/Song-style direction. Keep Arial only for Latin-only runs. For LibreOffice, split mixed-script runs and assign a renderer-visible CJK font explicitly to Han runs; never rely on fallback.
+- For Chinese native text, inspect the supplied template and fonts visible to the target renderer. Respect a renderer-visible template font only when its commercial-use and redistribution license is verified; otherwise default Chinese and Latin title/body text to `Source Han Sans SC`. Use `Source Han Serif SC` only for a confirmed serif/Song-style direction. For LibreOffice, split mixed-script runs and assign the approved CJK font explicitly to Han runs; never rely on fallback.
+- Use only fonts whose license has been explicitly verified to permit free commercial use and redistribution, such as SIL Open Font License 1.1 families in the companion allowlist. Installed, bundled with an operating system, or present in a template does not by itself prove redistribution permission. Treat unknown or unverified fonts as non-compliant and replace them with `Source Han Sans SC`; preserve a verified license and copyright notice whenever font files are distributed.
 - Require non-negative native transform extents. Reverse-direction connectors must use normalized bounds plus `flipH`/`flipV`; a negative connector width or height can trigger PowerPoint file repair.
 - Embed every SVG, image, screenshot, audio, video, and GIF inside the `.pptx` package. Never use linked-media relationships, local file paths, or web URLs as media sources in the delivered deck; the presentation must remain complete after being copied to another computer.
 - Preserve a user's confirmed diagrams, template, brand elements, notes, animations, and unaffected slides unless the user explicitly authorizes replacement.
@@ -218,7 +219,7 @@ Prefer a subtitle inside the SVG node or a small adjacent annotation. Avoid deta
 ## Build editable PowerPoint
 
 - Use native text boxes for titles, prose, labels, code, captions, and term explanations.
-- Choose native-text fonts from the template, operating system, and target renderer. For LibreOffice, split mixed Chinese/Latin text into runs; set the CJK font in both `a:latin` and `a:ea` on Han runs, and keep Arial only on Latin-only runs.
+- Choose native-text fonts from the template, operating system, and target renderer only after the font license is verified for commercial use and redistribution. Replace unknown or non-compliant title, body, Chinese, and Latin fonts with `Source Han Sans SC`. For LibreOffice, split mixed Chinese/Latin text into runs and set the approved CJK font in both `a:latin` and `a:ea` on Han runs.
 - Use native shapes and connectors for simple processes, cards, comparisons, and annotations.
 - Use native tables and charts whenever PowerPoint supports the required form.
 - Use embedded SVG for complex vector diagrams and embedded images only for real screenshots, photographs, complex backgrounds, or animations.
@@ -235,11 +236,12 @@ Run all checks in [references/qa-and-portability.md](references/qa-and-portabili
 1. Verify content, knowledge order, titles, terminology, examples, data, and code.
 2. Run the PPTX structural validator with the original file as baseline for template-derived decks.
 3. Render with Microsoft PowerPoint when available; inspect every slide for overflow, overlap, cropping, spacing, and font substitution.
-4. For Chinese decks targeting LibreOffice, first run `font_policy.py --renderer libreoffice`, then run `audit_pptx_fonts.py deck.pptx --libreoffice-safe --strict`; an unsplit mixed run or Arial-only Han run is a release failure.
-5. Audit media: all visual media must use embedded relationships; reject external targets and absolute local paths.
-6. Copy the presentation to an unrelated temporary directory, open it there, and render again.
-7. Work on a copy. Do not overwrite the user's source until the user approves the reviewed version.
-8. Keep one intentional recovery copy, not a trail of ambiguous “final-v2-final” files.
+4. Run `audit_font_licenses.py deck.pptx --strict`. Any font without verified commercial-use and redistribution terms is a release failure; normalize the affected text to `Source Han Sans SC`, then audit again.
+5. For Chinese decks targeting LibreOffice, first run `font_policy.py --renderer libreoffice`, then run `audit_pptx_fonts.py deck.pptx --libreoffice-safe --strict`; an unsplit mixed run or unsafe Han run is a release failure.
+6. Audit media: all visual media must use embedded relationships; reject external targets and absolute local paths.
+7. Copy the presentation to an unrelated temporary directory, open it there, and render again.
+8. Work on a copy. Do not overwrite the user's source until the user approves the reviewed version.
+9. Keep one intentional recovery copy, not a trail of ambiguous “final-v2-final” files.
 
 Use the bundled scripts:
 

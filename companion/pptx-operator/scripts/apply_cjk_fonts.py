@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write explicit East Asian fonts into native PPTX runs containing Han characters."""
+"""Write explicit approved fonts into native PPTX runs and split mixed-script text."""
 
 from __future__ import annotations
 
@@ -15,10 +15,12 @@ from font_policy import recommend_fonts, renderer_font_families
 
 
 HAN_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
+LATIN_RE = re.compile(r"[A-Za-z0-9]")
 CJK_SEGMENT_RE = re.compile(r"([\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]+)")
 TITLE_PLACEHOLDERS = {"title", "ctrTitle", "subTitle"}
 PATCHABLE = (
     re.compile(r"ppt/slides/slide\d+\.xml"),
+    re.compile(r"ppt/notesSlides/notesSlide\d+\.xml"),
     re.compile(r"ppt/charts/chart\d+\.xml"),
     re.compile(r"ppt/diagrams/data\d+\.xml"),
 )
@@ -120,11 +122,21 @@ def patch_xml(
     changed = 0
     for run in list(document.getElementsByTagName("a:r")):
         value = run_text(run)
-        if not HAN_RE.search(value):
+        has_han = bool(HAN_RE.search(value))
+        has_latin = bool(LATIN_RE.search(value))
+        if not has_han and not has_latin:
             continue
         title = is_title_run(run)
         cjk_font = title_font if title else body_font
         latin_font = title_latin if title else body_latin
+        current_properties = direct_child(run, "a:rPr")
+        if current_properties is not None and direct_child(current_properties, "a:sym") is not None:
+            continue
+        if not has_han:
+            properties = ensure_run_properties(document, run)
+            set_latin_font(document, properties, latin_font)
+            changed += 1
+            continue
         segments = script_segments(value)
         if len(segments) > 1:
             parent = run.parentNode
@@ -147,11 +159,21 @@ def patch_xml(
         changed += 1
 
     for run in list(document.getElementsByTagName("a:fld")):
-        if not HAN_RE.search(run_text(run)):
+        value = run_text(run)
+        has_han = bool(HAN_RE.search(value))
+        has_latin = bool(LATIN_RE.search(value))
+        if not has_han and not has_latin:
             continue
         title = is_title_run(run)
         cjk_font = title_font if title else body_font
+        latin_font = title_latin if title else body_latin
         properties = ensure_run_properties(document, run)
+        if direct_child(properties, "a:sym") is not None:
+            continue
+        if not has_han:
+            set_latin_font(document, properties, latin_font)
+            changed += 1
+            continue
         current_ea = direct_child(properties, "a:ea")
         current_latin = direct_child(properties, "a:latin")
         if (
@@ -188,8 +210,8 @@ def main() -> None:
     policy = recommend_fonts(args.template or input_path, renderer=args.renderer)
     title_font = args.title_font or policy["selection"]["title_cjk"]
     body_font = args.body_font or policy["selection"]["body_cjk"]
-    title_latin = policy["selection"]["title_latin"]
-    body_latin = policy["selection"]["body_latin"]
+    title_latin = policy["selection"]["title_latin"] or title_font
+    body_latin = policy["selection"]["body_latin"] or body_font
     if not title_font or not body_font:
         parser.error("no reliable CJK font was found; install one or pass explicit fonts")
     if not args.allow_uninstalled:
@@ -231,7 +253,7 @@ def main() -> None:
     print(f"body_cjk={body_font}")
     print(f"title_latin={title_latin}")
     print(f"body_latin={body_latin}")
-    print(f"changed_parts={changed_parts} changed_han_runs={changed_runs}")
+    print(f"changed_parts={changed_parts} changed_text_runs={changed_runs}")
 
 
 if __name__ == "__main__":

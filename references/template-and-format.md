@@ -56,7 +56,7 @@ Offer a concise choice, not an open-ended design interview:
 
 Create one representative style sample after these choices are confirmed.
 
-For a Chinese deck with no supplied template, default the Chinese title and body family to `Source Han Sans SC` when it is visible to the target renderer. Use `Source Han Serif SC` only when the user confirms a serif/Song-style visual direction. If the preferred family is unavailable, report the selected fallback before production.
+For a Chinese deck with no supplied template, default Chinese and Latin title/body text to `Source Han Sans SC` when it is visible to the target renderer. Use `Source Han Serif SC` only when the user confirms a serif/Song-style visual direction. Retain a template or fallback font only when authoritative terms permit commercial use and redistribution; otherwise replace it and report the change before production.
 
 ## Template report
 
@@ -105,4 +105,4 @@ Treat an existing deck as both content and template. Confirm whether to:
 
 Default to preserving masters, branding, confirmed diagrams, notes, and unaffected slides.
 
-For Chinese decks, do not report Arial as the Chinese font. Record Latin and East Asian fonts separately, identify the target rendering backend, and select only fonts visible to that backend. When targeting LibreOffice, split mixed-script text and require the chosen CJK font in both `a:latin` and `a:ea` on Han runs.
+For Chinese decks, do not report Arial as the Chinese font. Record Latin and East Asian fonts separately, identify the target rendering backend, and select only fonts that are both visible to that backend and verified for commercial use and redistribution. When targeting LibreOffice, split mixed-script text and require the chosen approved CJK font in both `a:latin` and `a:ea` on Han runs.

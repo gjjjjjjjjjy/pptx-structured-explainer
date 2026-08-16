@@ -48,8 +48,11 @@ Inspect:
 - terminology annotations too far from the corresponding term;
 - logo, footer, page number, and confidentiality collisions;
 - font substitution and missing glyphs.
+- font-license compliance: every native text font must have verified commercial-use and redistribution terms; unknown fonts must be replaced with `Source Han Sans SC`.
 
 For Chinese native text, resolve fonts against the intended backend. For LibreOffice, run the PPTX font audit with `--libreoffice-safe --strict`. LibreOffice showing only the English words of a mixed-language title is a blocking font/rendering failure even when OOXML text extraction still returns the Chinese characters. If the backend exposes no CJK font, stop instead of treating a structurally valid `a:ea` declaration as sufficient.
+
+Run `pptx-operator/scripts/audit_font_licenses.py deck.pptx --strict` for every delivered deck. The audit uses a conservative allowlist backed by authoritative license sources. A font absent from that allowlist is treated as unverified even when the operating system supplies it. Replace it with `Source Han Sans SC` or add it only after recording license evidence that explicitly permits commercial use and redistribution.
 
 Render changed pages at full resolution, then inspect a whole-deck contact sheet for consistency.
 

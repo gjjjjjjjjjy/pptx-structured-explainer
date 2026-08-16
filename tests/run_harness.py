@@ -452,6 +452,49 @@ class SkillHarness(unittest.TestCase):
         finally:
             sys.path.pop(0)
 
+    def test_09_font_license_audit_fails_closed(self) -> None:
+        source = self.root / "proprietary-font.pptx"
+        fixed = self.root / "open-font.pptx"
+        create_arial_chinese_deck(source)
+        failure = self.assert_failure(
+            run_python(PPTX_SCRIPTS / "audit_font_licenses.py", source, "--strict")
+        )
+        self.assertIn("no verified commercial-use and redistribution license", failure)
+        self.assert_success(
+            run_python(
+                PPTX_SCRIPTS / "apply_cjk_fonts.py",
+                source,
+                fixed,
+                "--title-font",
+                "Source Han Sans SC",
+                "--body-font",
+                "Source Han Sans SC",
+                "--allow-uninstalled",
+            )
+        )
+        self.assert_success(
+            run_python(PPTX_SCRIPTS / "audit_font_licenses.py", fixed, "--strict")
+        )
+
+    def test_10_svg_font_license_audit_fails_closed(self) -> None:
+        proprietary = self.root / "proprietary-font.svg"
+        approved = self.root / "open-font.svg"
+        template = (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">'
+            '<title>Font license fixture</title>'
+            '<text x="20" y="80" font-family="{font}" font-size="24">PPT 字体审计</text>'
+            '</svg>'
+        )
+        proprietary.write_text(template.format(font="Arial, sans-serif"), encoding="utf-8")
+        approved.write_text(
+            template.format(font="Source Han Sans SC, sans-serif"), encoding="utf-8"
+        )
+        failure = self.assert_failure(
+            run_python(SVG_SCRIPTS / "svg_validate.py", proprietary, "--strict")
+        )
+        self.assertIn("no verified commercial-use and redistribution license", failure)
+        self.assert_success(run_python(SVG_SCRIPTS / "svg_validate.py", approved, "--strict"))
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)

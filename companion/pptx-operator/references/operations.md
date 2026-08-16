@@ -36,7 +36,7 @@ Preserve paragraph and run formatting. Replace only the relevant run text when p
 
 Use real list paragraphs instead of literal bullet characters. Keep code in an editable monospaced text box. Leave sufficient width for font substitution and verify line wrapping after rendering.
 
-For Chinese native text, inspect the template font scheme and fonts visible to the target renderer before generation. On Windows, query both machine/user font registration and the Windows font directories; resolve localized family aliases such as `微软雅黑`/`Microsoft YaHei`, `等线`/`DengXian`, and `宋体`/`SimSun`. For PowerPoint, set Latin and East Asian typefaces separately. For LibreOffice compatibility, split mixed-script text: Latin-only runs may use Arial, while Han runs must carry the chosen CJK font in both `a:latin` and `a:ea` plus `lang="zh-CN"`. Do not depend on font fallback or assume that a bundled renderer can see every system font.
+For Chinese native text, inspect the template font scheme and fonts visible to the target renderer before generation. Keep a template or system font only when authoritative license evidence permits free commercial use and redistribution; installed status is not sufficient. The default approved family is `Source Han Sans SC`. For PowerPoint, set Latin and East Asian typefaces explicitly. For LibreOffice compatibility, split mixed-script text and require the approved CJK font in both `a:latin` and `a:ea` plus `lang="zh-CN"` on Han runs. Run `audit_font_licenses.py --strict` before delivery and replace every unknown or non-compliant font.
 
 ## Images and SVG
 

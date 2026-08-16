@@ -19,8 +19,9 @@
 - 按照由浅入深的知识依赖组织内容（概念先于机制、指标定义先于结果表、正确性先于性能）
 - 在专业术语首次出现时就近解释；缩写必须同时给出展开形式和释义
 - 有模板时尊重可渲染的模板字体；无模板时中文标题和正文默认使用 `Source Han Sans SC`（思源黑体），不把 Arial 当作中文字体
+- 交付前审计 PPT 内字体许可：只保留已确认允许免费商用和再分发的字体；未知或不合规字体统一替换为思源黑体
 - 检查并修复 PowerPoint 会触发文件修复的负宽度/负高度连接线几何
-- 自带轻量回归 harness，覆盖 SVG 内嵌位图、PPTX 内嵌 SVG/PNG、外链拦截和移动目录验证
+- 自带轻量回归 harness，覆盖 PPTX/SVG 字体许可审计、SVG 内嵌位图、PPTX 内嵌 SVG/PNG、外链拦截和移动目录验证
 - 先让用户选择 Structured、Hybrid、Custom 或逐图选择，再确认统一 SVG 风格并批量制作图示
 - 优先使用 PowerPoint 原生文字、形状、表格和图表，保持内容可编辑
 - 检查外部媒体链接、本地路径泄漏和缺失资源
@@ -133,11 +134,13 @@ python companion/pptx-operator/scripts/apply_cjk_fonts.py \
   deck.pptx deck-cjk.pptx --template deck.pptx --renderer libreoffice
 python companion/pptx-operator/scripts/audit_pptx_fonts.py \
   deck-cjk.pptx --libreoffice-safe --strict
+python companion/pptx-operator/scripts/audit_font_licenses.py \
+  deck-cjk.pptx --strict
 python companion/pptx-operator/scripts/render_pptx.py deck-cjk.pptx \
   --output-dir rendered
 ```
 
-字体策略以目标渲染器实际可见的字体为准。没有可用模板字体时，中文默认优先选择 `Source Han Sans SC`；若独立打包的 LibreOffice 看不到该字体或其他中文字体，命令会在生成前明确失败，并提示安装或配置 `Source Han Sans SC` / `Noto Sans CJK SC`，而不是继续依赖 Arial 回退并输出缺字页面。
+字体策略同时检查“渲染器可见”和“许可可分发”。模板或系统已安装字体不等于获得再分发许可；当许可未知时，Skill 按不合规处理并替换为 `Source Han Sans SC`。若独立打包的 LibreOffice 看不到思源或其他已核验字体，命令会在生成前明确失败，不依赖 Arial 回退。
 
 ## 回归测试 harness
 
@@ -154,7 +157,7 @@ python tests/run_harness.py --render-backend powerpoint
 python tests/run_harness.py --render-backend libreoffice
 ```
 
-需要保留生成的 PPTX、SVG、PNG 和渲染结果时，增加 `--artifacts-dir ./harness-artifacts`。harness 会新建独立子目录，不覆盖已有文件。当前用例覆盖中文字体 run 修复、Windows 字体中英文别名、负连接线检测与归一化、Structured SVG、SVG 内部 base64 位图、PPTX 包内 SVG/PNG、外部关系和 SVG 内部外链拦截、删除源素材后的移动目录校验。
+需要保留生成的 PPTX、SVG、PNG 和渲染结果时，增加 `--artifacts-dir ./harness-artifacts`。harness 会新建独立子目录，不覆盖已有文件。当前用例覆盖中文字体 run 修复、PPTX/SVG 未知字体许可拦截与思源替换、Windows 字体中英文别名、负连接线检测与归一化、Structured SVG、SVG 内部 base64 位图、PPTX 包内 SVG/PNG、外部关系和 SVG 内部外链拦截、删除源素材后的移动目录校验。
 
 `audit_media.py` 通过时打印 `PASS`，发现问题时打印 `FAIL` 并以非零状态退出，可直接用于 CI 或提交前检查。
 
@@ -208,8 +211,10 @@ pptx-structured-explainer/
     │       ├── inventory_pptx.py
     │       ├── audit_media.py
     │       ├── font_policy.py
+    │       ├── font_licenses.py
     │       ├── apply_cjk_fonts.py
     │       ├── audit_pptx_fonts.py
+    │       ├── audit_font_licenses.py
     │       ├── normalize_connectors.py
     │       ├── validate_pptx.py
     │       └── render_pptx.py

@@ -16,6 +16,8 @@ from pathlib import Path
 
 from defusedxml import ElementTree as ET
 
+from font_licenses import approved_candidates
+
 
 A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 THEME_TOKENS = {"+mj-ea", "+mn-ea", "+mj-lt", "+mn-lt", ""}
@@ -24,22 +26,15 @@ CJK_PREFERENCES = {
         "Source Han Sans SC",
         "Noto Sans CJK SC",
         "Noto Sans SC",
-        "PingFang SC",
-        "Hiragino Sans GB",
-        "Heiti SC",
     ],
     "Windows": [
         "Source Han Sans SC",
         "Noto Sans CJK SC",
         "Noto Sans SC",
-        "Microsoft YaHei",
-        "DengXian",
-        "SimSun",
-        "SimHei",
     ],
-    "Linux": ["Source Han Sans SC", "Noto Sans CJK SC", "Noto Sans SC", "WenQuanYi Micro Hei"],
+    "Linux": ["Source Han Sans SC", "Noto Sans CJK SC", "Noto Sans SC"],
 }
-LATIN_PREFERENCES = ["Source Han Sans SC", "Noto Sans", "Liberation Sans", "Arial", "Calibri"]
+LATIN_PREFERENCES = ["Source Han Sans SC", "IBM Plex Sans", "Inter"]
 FONT_ALIASES = {
     "microsoft yahei": ["微软雅黑", "Microsoft YaHei UI"],
     "微软雅黑": ["Microsoft YaHei", "Microsoft YaHei UI"],
@@ -280,8 +275,8 @@ def recommend_fonts(template: Path | None = None, renderer: str = "system") -> d
     system = platform.system()
     cjk_defaults = CJK_PREFERENCES.get(system, CJK_PREFERENCES["Linux"])
 
-    title_cjk, title_match = _pick(template_fonts["title_cjk"], installed)
-    body_cjk, body_match = _pick(template_fonts["body_cjk"], installed)
+    title_cjk, title_match = _pick(approved_candidates(template_fonts["title_cjk"]), installed)
+    body_cjk, body_match = _pick(approved_candidates(template_fonts["body_cjk"]), installed)
     fallback_source = "system" if renderer in {"system", "powerpoint"} else "renderer"
     title_source = "template" if title_cjk else fallback_source
     body_source = "template" if body_cjk else fallback_source
@@ -294,8 +289,8 @@ def recommend_fonts(template: Path | None = None, renderer: str = "system") -> d
     if not body_cjk:
         body_cjk = title_cjk
 
-    title_latin, _ = _pick(template_fonts["title_latin"] + LATIN_PREFERENCES, installed)
-    body_latin, _ = _pick(template_fonts["body_latin"] + LATIN_PREFERENCES, installed)
+    title_latin, _ = _pick(approved_candidates(template_fonts["title_latin"]) + LATIN_PREFERENCES, installed)
+    body_latin, _ = _pick(approved_candidates(template_fonts["body_latin"]) + LATIN_PREFERENCES, installed)
     return {
         "template": str(template.resolve()) if template else None,
         "platform": system,
@@ -306,13 +301,14 @@ def recommend_fonts(template: Path | None = None, renderer: str = "system") -> d
         "selection": {
             "title_cjk": title_cjk,
             "body_cjk": body_cjk,
-            "title_latin": title_latin or title_cjk or "Arial",
-            "body_latin": body_latin or body_cjk or "Arial",
+            "title_latin": title_latin or title_cjk,
+            "body_latin": body_latin or body_cjk,
             "title_cjk_source": title_source if title_cjk else None,
             "body_cjk_source": body_source if body_cjk else None,
         },
         "rule": (
-            "Respect a renderer-visible template font; otherwise prefer Source Han Sans SC for Chinese. "
+            "Keep only renderer-visible template fonts with verified commercial-use and redistribution terms; "
+            "otherwise prefer Source Han Sans SC. "
             "For LibreOffice, split mixed-script runs "
             "and write the selected CJK font to both a:latin and a:ea on Han runs; never rely on Arial fallback."
         ),

@@ -20,6 +20,21 @@ URL_RE = re.compile(r"url\(([^)]+)\)", re.I)
 EMBEDDED_IMAGE_RE = re.compile(
     r"^data:image/(?P<mime>png|jpe?g|webp);base64,(?P<data>[A-Za-z0-9+/=\s]+)$", re.I
 )
+APPROVED_FONT_FAMILIES = {
+    "source han sans sc",
+    "思源黑体",
+    "source han serif sc",
+    "思源宋体",
+    "noto sans cjk sc",
+    "noto sans sc",
+    "noto serif cjk sc",
+    "noto serif sc",
+    "ibm plex sans sc",
+    "ibm plex sans",
+    "ibm plex mono",
+    "inter",
+}
+GENERIC_FONT_FAMILIES = {"sans-serif", "serif", "monospace"}
 
 
 def local_name(tag: str) -> str:
@@ -86,6 +101,27 @@ def embedded_image_error(href: str) -> str | None:
     return None
 
 
+def declared_font_family(element) -> str | None:
+    value = element.attrib.get("font-family")
+    if value:
+        return value
+    style = element.attrib.get("style", "")
+    match = re.search(r"(?:^|;)\s*font-family\s*:\s*([^;]+)", style, re.I)
+    return match.group(1).strip() if match else None
+
+
+def check_font_license(value: str) -> list[str]:
+    errors = []
+    families = [part.strip().strip("\"'").casefold() for part in value.split(",")]
+    explicit = [family for family in families if family and family not in GENERIC_FONT_FAMILIES]
+    if not any(family in APPROVED_FONT_FAMILIES for family in explicit):
+        errors.append(f"font stack has no verified redistributable family: {value}")
+    for family in explicit:
+        if family not in APPROVED_FONT_FAMILIES:
+            errors.append(f"font family has no verified commercial-use and redistribution license: {family}")
+    return errors
+
+
 def validate(path: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -116,6 +152,7 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
         return errors, warnings
 
     ids: set[str] = set()
+    parent_map = {child: parent for parent in root.iter() for child in parent}
     for element in root.iter():
         tag = local_name(element.tag)
         if tag in FORBIDDEN_TAGS:
@@ -143,6 +180,15 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
                     errors.append(f"external CSS URL is not portable: {target[:80]}")
 
         if tag == "text":
+            font_family = declared_font_family(element)
+            ancestor = parent_map.get(element)
+            while not font_family and ancestor is not None:
+                font_family = declared_font_family(ancestor)
+                ancestor = parent_map.get(ancestor)
+            if not font_family:
+                errors.append("text has no explicit or inherited font-family license declaration")
+            else:
+                errors.extend(check_font_license(font_family))
             size = number(element.attrib.get("font-size"))
             style = element.attrib.get("style", "")
             if size is None:

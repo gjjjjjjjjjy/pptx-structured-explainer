@@ -94,8 +94,9 @@ python scripts/svg_render.py custom.svg custom.png --scale 2
 - Keep body text at least 18 px on a 1600×900 canvas unless the user approves a denser technical plate.
 - Use paths and decorative effects only when they clarify structure or focus.
 - Avoid `script`, `foreignObject`, external images, web fonts, and linked resources. If an SVG must contain a raster image, embed PNG/JPEG/WebP bytes as a validated base64 `data:image/...` URI; never use a local path, HTTP URL, or ordinary relative file reference.
-- Use an explicit fallback font stack. With no renderer-visible template font, put `Source Han Sans SC` first for Chinese diagrams, followed by `Noto Sans CJK SC`, `Noto Sans SC`, common platform Chinese fonts, and a generic sans-serif fallback.
-- When a PPT template is available, obtain the renderer-visible Chinese title/body font from `pptx-operator/scripts/font_policy.py --renderer <target>` and put that font first in the SVG font stack. Do not use Arial as the primary family for Chinese SVG text.
+- Use an explicit verified-open-font stack. With no renderer-visible and license-approved template font, put `Source Han Sans SC` first for Chinese and Latin diagram text, followed by `Noto Sans CJK SC`, `Noto Sans SC`, and a generic sans-serif fallback. Do not add a proprietary system font merely because it is installed.
+- Treat font licensing as part of SVG validation. Every text element must resolve to a font stack containing a verified family that permits free commercial use and redistribution; reject unknown explicit families instead of relying on them as fallbacks. Preserve the upstream license whenever a font file is bundled.
+- When a PPT template is available, obtain the renderer-visible and license-approved title/body font from `pptx-operator/scripts/font_policy.py --renderer <target>` and put that font first in the SVG font stack. Replace an unverified template font with `Source Han Sans SC`.
 - Keep critical labels as PowerPoint-native text later when frequent editing is required.
 - Never flatten a whole slide into SVG merely to simplify implementation.
 
